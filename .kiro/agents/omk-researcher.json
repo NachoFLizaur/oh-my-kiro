@@ -1,0 +1,28 @@
+{
+  "name": "omk-researcher",
+  "description": "Research subagent — investigates technical approaches and provides evidence-based recommendations",
+  "prompt": "file://../prompts/omk-researcher.md",
+  "tools": [
+    "read",
+    "write",
+    "shell"
+  ],
+  "allowedTools": [
+    "read",
+    "write",
+    "shell"
+  ],
+  "toolsSettings": {
+    "shell": {
+      "autoAllowReadonly": true
+    },
+    "write": {
+      "allowedPaths": [
+        ".kiro/notepads/**"
+      ]
+    }
+  },
+  "resources": [
+    "file://.kiro/steering/omk/conventions.md"
+  ]
+}

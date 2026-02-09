@@ -1,0 +1,28 @@
+{
+  "name": "omk-reviewer",
+  "description": "Code review subagent — reviews quality, runs tests, validates implementations",
+  "prompt": "file://../prompts/omk-reviewer.md",
+  "tools": [
+    "read",
+    "write",
+    "shell"
+  ],
+  "allowedTools": [
+    "read",
+    "write",
+    "shell"
+  ],
+  "toolsSettings": {
+    "shell": {
+      "autoAllowReadonly": true
+    },
+    "write": {
+      "allowedPaths": [
+        ".kiro/notepads/**"
+      ]
+    }
+  },
+  "resources": [
+    "file://.kiro/steering/omk/conventions.md"
+  ]
+}

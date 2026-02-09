@@ -1,0 +1,29 @@
+{
+  "name": "omk-metis",
+  "description": "Plan review subagent — challenges plans with approval bias, only rejects for true blockers",
+  "prompt": "file://../prompts/omk-metis.md",
+  "tools": [
+    "read",
+    "write",
+    "shell"
+  ],
+  "allowedTools": [
+    "read",
+    "write",
+    "shell"
+  ],
+  "toolsSettings": {
+    "shell": {
+      "autoAllowReadonly": true
+    },
+    "write": {
+      "allowedPaths": [
+        ".kiro/notepads/**"
+      ]
+    }
+  },
+  "resources": [
+    "file://.kiro/steering/omk/conventions.md",
+    "file://.kiro/steering/omk/plan-format.md"
+  ]
+}

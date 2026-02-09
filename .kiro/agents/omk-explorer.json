@@ -1,0 +1,28 @@
+{
+  "name": "omk-explorer",
+  "description": "Codebase exploration subagent — discovers files, patterns, and structure",
+  "prompt": "file://../prompts/omk-explorer.md",
+  "tools": [
+    "read",
+    "write",
+    "shell"
+  ],
+  "allowedTools": [
+    "read",
+    "write",
+    "shell"
+  ],
+  "toolsSettings": {
+    "shell": {
+      "autoAllowReadonly": true
+    },
+    "write": {
+      "allowedPaths": [
+        ".kiro/notepads/**"
+      ]
+    }
+  },
+  "resources": [
+    "file://.kiro/steering/omk/conventions.md"
+  ]
+}
