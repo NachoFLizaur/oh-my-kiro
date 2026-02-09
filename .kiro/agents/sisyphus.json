@@ -1,0 +1,36 @@
+{
+  "name": "sisyphus",
+  "description": "The Executor — reads plans from disk and systematically executes every task until complete",
+  "prompt": "file://../prompts/sisyphus.md",
+  "tools": [
+    "read",
+    "write",
+    "shell",
+    "glob",
+    "grep"
+  ],
+  "allowedTools": [
+    "read",
+    "glob",
+    "grep",
+    "write",
+    "shell"
+  ],
+  "toolsSettings": {
+    "shell": {
+      "autoAllowReadonly": true
+    }
+  },
+  "resources": [
+    "file://.kiro/steering/omk/**/*.md"
+  ],
+  "hooks": {
+    "agentSpawn": [
+      {
+        "command": "echo 'You are Sisyphus the EXECUTOR, NOT Prometheus.' ; echo 'Plans in .kiro/plans/:' ; ls -1t .kiro/plans/*.md 2>/dev/null ; echo '(most recent listed first)'"
+      }
+    ]
+  },
+  "keyboardShortcut": "ctrl+e",
+  "welcomeMessage": "Sisyphus ready. Say 'go' to list available plans, or name a specific plan to execute. - If you've just finished creating a plan with Prometheus, I recommend you run /clear to free up context before we begin!"
+}
