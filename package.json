@@ -1,0 +1,35 @@
+{
+  "name": "oh-my-kiro",
+  "version": "0.1.0",
+  "description": "Multi-agent orchestration for Kiro — plan, execute, and review with specialized AI agents",
+  "bin": {
+    "oh-my-kiro": "bin/cli.mjs"
+  },
+  "files": [
+    "bin/",
+    ".kiro/agents/",
+    ".kiro/prompts/",
+    ".kiro/steering/",
+    ".kiro/hooks/",
+    ".kiro/skills/",
+    "install.sh"
+  ],
+  "keywords": [
+    "kiro",
+    "ai",
+    "agents",
+    "multi-agent",
+    "orchestration",
+    "coding-assistant"
+  ],
+  "author": "Nacho F. Lizaur",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nflizaur/oh-my-kiro"
+  },
+  "homepage": "https://github.com/nflizaur/oh-my-kiro#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

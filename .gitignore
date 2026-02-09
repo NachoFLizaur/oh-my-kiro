@@ -10,3 +10,6 @@ kiro-cli-docs/
 
 # Testing Scripts
 .kiro/scripts/
+
+# Node.js
+node_modules/

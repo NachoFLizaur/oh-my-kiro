@@ -4,6 +4,7 @@
 
 Structured planning. Delegated execution. Defense-in-depth guardrails.
 
+[![npm](https://img.shields.io/npm/v/oh-my-kiro)](https://www.npmjs.com/package/oh-my-kiro)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
@@ -97,21 +98,15 @@ DRAFT  →  READY  →  IN_PROGRESS  →  COMPLETE
 
 ## Quick Start
 
-**1. Clone and install**
+**1. Install**
 
 ```bash
-git clone https://github.com/nflizaur/oh-my-kiro.git
-cd oh-my-kiro
-./install.sh
+npx oh-my-kiro
 ```
 
 **2. Open your project in Kiro**
 
-Oh-My-Kiro agents are now available in your project.
-
-**3. Start planning**
-
-Press `ctrl+p` to open **Prometheus** and describe what you want to build. When the plan is ready, press `ctrl+a` to switch to **Atlas** and execute it.
+**3. Start planning with Prometheus (`ctrl+p`)**
 
 ---
 
@@ -119,25 +114,38 @@ Press `ctrl+p` to open **Prometheus** and describe what you want to build. When 
 
 ### Prerequisites
 
-- [Kiro CLI](https://kiro.dev) installed and available in your PATH
+- [Kiro](https://kiro.dev) installed and available in your PATH
 
-### Local Install (single project)
+### Recommended: npx (no clone needed)
 
 ```bash
-git clone https://github.com/nflizaur/oh-my-kiro.git
-cd oh-my-kiro
-./install.sh
+npx oh-my-kiro
 ```
 
 This copies the `.kiro/` directory into your current working directory. Agents are available only in that project.
 
-### Global Install (all projects)
+**Global install** (all projects):
 
 ```bash
-./install.sh --global
+npx oh-my-kiro --global
 ```
 
-This installs to `~/.kiro/`, making agents available in every project you open with Kiro.
+Installs to `~/.kiro/`, making agents available in every project you open with Kiro.
+
+**Overwrite existing files** (skip prompts):
+
+```bash
+npx oh-my-kiro --force
+```
+
+### Alternative: Clone + install script
+
+```bash
+git clone https://github.com/nflizaur/oh-my-kiro.git
+cd oh-my-kiro
+./install.sh            # local install
+./install.sh --global   # global install
+```
 
 ### Options
 
