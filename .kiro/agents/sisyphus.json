@@ -1,24 +1,30 @@
 {
   "name": "sisyphus",
-  "description": "The Executor — reads plans from disk and systematically executes every task until complete",
+  "description": "The Executor — handles direct user requests by delegating to specialized subagents. For plan execution, use Atlas.",
   "prompt": "file://../prompts/sisyphus.md",
   "tools": [
     "read",
     "write",
     "shell",
     "glob",
-    "grep"
+    "grep",
+    "use_subagent"
   ],
   "allowedTools": [
     "read",
     "glob",
     "grep",
     "write",
-    "shell"
+    "shell",
+    "use_subagent"
   ],
   "toolsSettings": {
     "shell": {
       "autoAllowReadonly": true
+    },
+    "subagent": {
+      "trustedAgents": ["omk-explorer", "omk-sisyphus-jr", "omk-reviewer"],
+      "availableAgents": ["omk-explorer", "omk-sisyphus-jr", "omk-reviewer"]
     }
   },
   "resources": [
@@ -27,10 +33,10 @@
   "hooks": {
     "agentSpawn": [
       {
-        "command": "echo 'You are Sisyphus the EXECUTOR, NOT Prometheus.' ; echo 'Plans in .kiro/plans/:' ; ls -1t .kiro/plans/*.md 2>/dev/null ; echo '(most recent listed first)'"
+        "command": "echo 'You are Sisyphus — direct task executor. For PLAN execution, tell the user to switch to Atlas (ctrl+a).'"
       }
     ]
   },
   "keyboardShortcut": "ctrl+e",
-  "welcomeMessage": "Sisyphus ready. Say 'go' to list available plans, or name a specific plan to execute. - If you've just finished creating a plan with Prometheus, I recommend you run /clear to free up context before we begin!"
+  "welcomeMessage": "Sisyphus ready. Give me a direct task, or switch to Atlas (ctrl+a) for plan execution. - If you've finished creating a plan with Prometheus, I recommend you run /clear to free up context before we begin!"
 }
