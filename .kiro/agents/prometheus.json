@@ -1,18 +1,17 @@
 {
   "name": "prometheus",
-  "description": "The Planner — researches codebases, interviews users, and generates structured execution plans",
+  "description": "The Planner — interviews users, delegates research to subagents, and generates structured execution plans",
   "prompt": "file://../prompts/prometheus.md",
   "tools": [
     "read",
     "write",
     "shell",
-    "glob",
-    "grep"
+    "use_subagent"
   ],
   "allowedTools": [
     "read",
-    "glob",
-    "grep"
+    "write",
+    "use_subagent"
   ],
   "toolsSettings": {
     "write": {
@@ -23,6 +22,10 @@
     },
     "shell": {
       "autoAllowReadonly": true
+    },
+    "subagent": {
+      "trustedAgents": ["omk-explorer", "omk-researcher", "omk-metis"],
+      "availableAgents": ["omk-explorer", "omk-researcher", "omk-metis"]
     }
   },
   "resources": [
@@ -31,7 +34,17 @@
   "hooks": {
     "agentSpawn": [
       {
-        "command": "echo 'You are Prometheus the PLANNER, NOT Sisyphus.'"
+        "command": "echo 'You are Prometheus the PLANNER. You create PLANS, never implement. Delegate all exploration to omk-explorer.'"
+      }
+    ],
+    "preToolUse": [
+      {
+        "matcher": "fs_read",
+        "command": "bash .kiro/hooks/prometheus-read-guard.sh"
+      },
+      {
+        "matcher": "fs_write",
+        "command": "bash .kiro/hooks/prometheus-write-guard.sh"
       }
     ]
   },
