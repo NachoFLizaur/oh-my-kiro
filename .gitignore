@@ -1,0 +1,12 @@
+# Oh-My-Kiro planning artifacts (not shipped)
+.orchestrator/
+
+# Runtime plan/notepad content (created by agents at runtime)
+.kiro/plans/
+.kiro/notepads/
+
+# kiro-cli docs
+kiro-cli-docs/
+
+# Testing Scripts
+.kiro/scripts/
