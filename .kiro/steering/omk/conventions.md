@@ -11,8 +11,8 @@
 | Skill directories | kebab-case | `git-operations/`, `code-review/` |
 
 ## Agent Naming
-- Main agents: lowercase (`prometheus`, `sisyphus`)
-- Subagents: `omk-` prefix (`omk-explorer`, `omk-metis`, `omk-implementer`)
+- Main agents: lowercase (`prometheus`, `sisyphus`, `atlas`)
+- Subagents: `omk-` prefix (`omk-explorer`, `omk-metis`, `omk-sisyphus-jr`)
 - The `omk-` prefix prevents collision with user's own agents
 
 ## Directory Structure
@@ -35,10 +35,37 @@
 - Status lifecycle: DRAFT → READY → IN_PROGRESS → COMPLETE
 
 ## Notepad System
-- Location: `.kiro/notepads/{plan-name}/`
-- One directory per active plan
-- Subagents write findings here for cross-task memory
-- Cleaned up when plan is marked COMPLETE
+
+The notepad system provides cross-subagent memory for plan execution. Since subagents have isolated contexts and can't see each other's work, notepads provide a shared filesystem location for exchanging findings, decisions, and intermediate results.
+
+### Location
+`.kiro/notepads/{plan-name}/` — one directory per active plan.
+
+### File Naming
+| File | Written By | Purpose |
+|------|-----------|---------|
+| `exploration.md` | omk-explorer | Codebase exploration findings |
+| `research.md` | omk-researcher | Research results and recommendations |
+| `review.md` | omk-metis / omk-reviewer | Plan or code review notes |
+| `decisions.md` | prometheus / sisyphus | Key decisions made during execution |
+| `progress.md` | sisyphus | Execution progress and blockers |
+
+### Rules
+- Subagents **APPEND** to notepad files, never overwrite
+- Main agents (Prometheus/Sisyphus) create the notepad directory before spawning subagents
+- Notepad files use markdown format
+- Each entry should be labeled with the task context (e.g., `### Exploration: auth module`)
+- Notepad directories are cleaned up when plan status is COMPLETE
+
+### Example
+```
+.kiro/notepads/add-user-auth/
+├── exploration.md    # Explorer's findings about current auth code
+├── research.md       # Researcher's findings about auth approaches
+├── review.md         # Metis's review of the plan
+├── decisions.md      # Prometheus's key decisions
+└── progress.md       # Sisyphus's execution progress
+```
 
 ## Configuration Rules
 - **NEVER** include `model` field in agent configs — users set their own
