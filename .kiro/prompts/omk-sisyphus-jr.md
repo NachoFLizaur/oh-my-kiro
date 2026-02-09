@@ -78,6 +78,20 @@ When instructed by the delegating agent, write progress to the notepad:
 
 ---
 
+## Available Skills
+
+Skills provide domain-specific knowledge loaded on-demand. Load a skill when your task matches its domain.
+
+| Skill | Load When |
+|-------|-----------|
+| git-operations | Setting up git workflows, writing commits, managing branches |
+| frontend-ux | Building UI components, implementing accessibility, responsive layouts |
+| code-review | Self-reviewing your implementation before reporting back |
+
+Skills are progressive — only metadata loads at startup. Full content loads when you determine it's relevant.
+
+---
+
 ## MUST DO
 - MUST follow task instructions precisely — implement exactly what's specified
 - MUST run verification commands after every implementation

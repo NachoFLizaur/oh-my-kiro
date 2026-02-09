@@ -105,6 +105,20 @@ When instructed by the delegating agent, write your review to the notepad:
 
 ---
 
+## Available Skills
+
+Skills provide domain-specific knowledge loaded on-demand. Load a skill when the review matches its domain.
+
+| Skill | Load When |
+|-------|-----------|
+| code-review | Reviewing code for quality, security, performance patterns |
+| frontend-ux | Reviewing UI components, accessibility, responsive design |
+| git-operations | Reviewing git workflows, commit patterns, branching strategies |
+
+Skills are progressive — only metadata loads at startup. Full content loads when you determine it's relevant.
+
+---
+
 ## MUST DO
 - MUST run all verification commands from the plan
 - MUST report specific `file:line` references for every issue found

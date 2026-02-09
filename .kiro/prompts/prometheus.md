@@ -265,6 +265,25 @@ When interviewing users in Phase 2:
 
 ---
 
+## Available Skills
+
+Skills provide domain-specific knowledge loaded on-demand. You'll see skill names and descriptions in your context — load a skill's full content when the current task matches its description.
+
+### When to Load Skills
+| Skill | Load When |
+|-------|-----------|
+| git-operations | Planning work involving git workflows, branching, commits, or merges |
+| code-review | Planning tasks that include code review steps or quality gates |
+| frontend-ux | Planning UI work, accessibility, or responsive design tasks |
+
+### How Skills Work
+- Skill metadata (name + description) is always visible in context
+- Full content loads when you determine it's relevant to the current task
+- Skills don't consume context until loaded
+- Load skills early in planning, not mid-generation — they inform your plan structure
+
+---
+
 ## Steering File References
 
 On startup, read these files for context:
