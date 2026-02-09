@@ -1,13 +1,10 @@
 #!/bin/bash
 # Oh-My-Kiro Installer
-# Usage: ./install.sh [--global] [--force] [--help]
-#   --global  Install to ~/.kiro/ (available in all projects)
-#   --force   Overwrite existing files without prompting
-#   --help    Show this help message
-#
-# To uninstall, remove the installed .kiro/ directory:
-#   Local:  rm -rf .kiro/
-#   Global: rm -rf ~/.kiro/
+# Usage: ./install.sh [--global] [--force] [--uninstall] [--help]
+#   --global     Install/uninstall to/from ~/.kiro/ (available in all projects)
+#   --force      Overwrite existing files without prompting (or skip confirmation on uninstall)
+#   --uninstall  Remove Oh-My-Kiro files (only ours — never the whole .kiro/)
+#   --help       Show this help message
 
 set -e
 
@@ -46,6 +43,7 @@ error() { printf "${RED}[error]${RESET} %s\n" "$1" >&2; }
 # ---------------------------------------------------------------------------
 GLOBAL_INSTALL=false
 FORCE=false
+UNINSTALL=false
 
 # ---------------------------------------------------------------------------
 # Argument parsing
@@ -60,8 +58,17 @@ while [ $# -gt 0 ]; do
             FORCE=true
             shift
             ;;
+        --uninstall)
+            UNINSTALL=true
+            shift
+            ;;
         --help|-h)
-            sed -n '2,11p' "$0" | sed 's/^#//' | sed 's/^ //'
+            printf "Oh-My-Kiro Installer\n"
+            printf "Usage: ./install.sh [--global] [--force] [--uninstall] [--help]\n"
+            printf "  --global     Install/uninstall to/from ~/.kiro/ (available in all projects)\n"
+            printf "  --force      Overwrite existing files without prompting (or skip confirmation on uninstall)\n"
+            printf "  --uninstall  Remove Oh-My-Kiro files (only ours — never the whole .kiro/)\n"
+            printf "  --help       Show this help message\n"
             exit 0
             ;;
         *)
@@ -79,6 +86,157 @@ if [ "$GLOBAL_INSTALL" = true ]; then
     TARGET_DIR="${HOME}/.kiro"
 else
     TARGET_DIR="${PWD}/.kiro"
+fi
+
+# ---------------------------------------------------------------------------
+# File manifest — everything we install (shared by install and uninstall)
+# ---------------------------------------------------------------------------
+AGENT_FILES="prometheus.json atlas.json sisyphus.json omk-explorer.json omk-metis.json omk-researcher.json omk-reviewer.json omk-sisyphus-jr.json"
+PROMPT_FILES="prometheus.md atlas.md sisyphus.md omk-explorer.md omk-metis.md omk-researcher.md omk-reviewer.md omk-sisyphus-jr.md"
+STEERING_FILES="product.md conventions.md plan-format.md architecture.md"
+HOOK_FILES="agent-spawn.sh pre-tool-use.sh prometheus-read-guard.sh prometheus-write-guard.sh"
+SKILL_DIRS="git-operations code-review frontend-ux"
+
+# ---------------------------------------------------------------------------
+# Uninstall logic
+# ---------------------------------------------------------------------------
+if [ "$UNINSTALL" = true ]; then
+    printf "\n${BOLD}  Oh-My-Kiro Uninstaller${RESET}\n"
+    printf "  Target: ${BOLD}%s${RESET}\n\n" "$TARGET_DIR"
+
+    # Check if target directory exists at all
+    if [ ! -d "$TARGET_DIR" ]; then
+        warn "Target directory does not exist: ${TARGET_DIR}"
+        info "Nothing to uninstall."
+        exit 0
+    fi
+
+    # Confirmation prompt (unless --force)
+    if [ "$FORCE" = false ]; then
+        printf "  This will remove Oh-My-Kiro files from %s. Continue? [y/N] " "$TARGET_DIR"
+        read -r answer
+        case "$answer" in
+            [yY]|[yY][eE][sS]) ;;
+            *)
+                info "Uninstall cancelled."
+                exit 0
+                ;;
+        esac
+        printf "\n"
+    fi
+
+    removed=0
+    not_found=0
+
+    # Helper: remove a single file, count result
+    remove_file() {
+        if [ -f "$1" ]; then
+            rm -f "$1"
+            removed=$((removed + 1))
+            return 0
+        fi
+        not_found=$((not_found + 1))
+        return 1
+    }
+
+    # Helper: remove directory if it exists and is empty
+    remove_dir_if_empty() {
+        if [ -d "$1" ] && [ -z "$(ls -A "$1" 2>/dev/null)" ]; then
+            rmdir "$1"
+            return 0
+        fi
+        return 1
+    }
+
+    # --- Agents ---
+    info "Removing agents..."
+    for f in $AGENT_FILES; do
+        remove_file "${TARGET_DIR}/agents/${f}" || true
+        remove_file "${TARGET_DIR}/agents/${f}.bak" || true
+    done
+
+    # --- Prompts ---
+    info "Removing prompts..."
+    for f in $PROMPT_FILES; do
+        remove_file "${TARGET_DIR}/prompts/${f}" || true
+        remove_file "${TARGET_DIR}/prompts/${f}.bak" || true
+    done
+
+    # --- Steering (entire omk/ directory is ours) ---
+    info "Removing steering files..."
+    if [ -d "${TARGET_DIR}/steering/omk" ]; then
+        rm -rf "${TARGET_DIR}/steering/omk"
+        removed=$((removed + 1))
+    else
+        not_found=$((not_found + 1))
+    fi
+
+    # --- Hooks ---
+    info "Removing hooks..."
+    for f in $HOOK_FILES; do
+        remove_file "${TARGET_DIR}/hooks/${f}" || true
+        remove_file "${TARGET_DIR}/hooks/${f}.bak" || true
+    done
+
+    # --- Skills (entire skill directories are ours) ---
+    info "Removing skills..."
+    for skill in $SKILL_DIRS; do
+        if [ -d "${TARGET_DIR}/skills/${skill}" ]; then
+            rm -rf "${TARGET_DIR}/skills/${skill}"
+            removed=$((removed + 1))
+        else
+            not_found=$((not_found + 1))
+        fi
+    done
+
+    # --- Runtime .gitkeep files ---
+    info "Removing runtime files..."
+    remove_file "${TARGET_DIR}/plans/.gitkeep" || true
+    remove_file "${TARGET_DIR}/notepads/.gitkeep" || true
+
+    # --- Clean up empty directories (bottom-up) ---
+    info "Cleaning up empty directories..."
+    dirs_removed=0
+    for dir in \
+        "${TARGET_DIR}/agents" \
+        "${TARGET_DIR}/prompts" \
+        "${TARGET_DIR}/steering" \
+        "${TARGET_DIR}/hooks" \
+        "${TARGET_DIR}/skills" \
+        "${TARGET_DIR}/plans" \
+        "${TARGET_DIR}/notepads"; do
+        if remove_dir_if_empty "$dir"; then
+            dirs_removed=$((dirs_removed + 1))
+        fi
+    done
+
+    # --- Summary ---
+    printf "\n"
+    printf "${GREEN}${BOLD}  Uninstall complete!${RESET}\n\n"
+    printf "  Files/dirs removed: ${BOLD}%d${RESET}\n" "$removed"
+    if [ "$not_found" -gt 0 ]; then
+        printf "  Already absent:     ${BOLD}%d${RESET}\n" "$not_found"
+    fi
+    if [ "$dirs_removed" -gt 0 ]; then
+        printf "  Empty dirs cleaned: ${BOLD}%d${RESET}\n" "$dirs_removed"
+    fi
+
+    # Check what's left
+    if [ -d "$TARGET_DIR" ]; then
+        remaining=$(ls -A "$TARGET_DIR" 2>/dev/null)
+        if [ -n "$remaining" ]; then
+            printf "\n  ${YELLOW}Remaining items in %s:${RESET}\n" "$TARGET_DIR"
+            for item in $remaining; do
+                printf "    - %s\n" "$item"
+            done
+            printf "\n  These are not Oh-My-Kiro files and were left untouched.\n"
+        else
+            printf "\n  %s is now empty (but preserved).\n" "$TARGET_DIR"
+        fi
+    fi
+    printf "\n"
+
+    exit 0
 fi
 
 # ---------------------------------------------------------------------------
@@ -135,15 +293,6 @@ if [ -d "$TARGET_DIR" ] && [ "$FORCE" = false ]; then
         esac
     fi
 fi
-
-# ---------------------------------------------------------------------------
-# File manifest — everything we install
-# ---------------------------------------------------------------------------
-AGENT_FILES="prometheus.json atlas.json sisyphus.json omk-explorer.json omk-metis.json omk-researcher.json omk-reviewer.json omk-sisyphus-jr.json"
-PROMPT_FILES="prometheus.md atlas.md sisyphus.md omk-explorer.md omk-metis.md omk-researcher.md omk-reviewer.md omk-sisyphus-jr.md"
-STEERING_FILES="product.md conventions.md plan-format.md architecture.md"
-HOOK_FILES="agent-spawn.sh pre-tool-use.sh prometheus-read-guard.sh prometheus-write-guard.sh"
-SKILL_DIRS="git-operations code-review frontend-ux"
 
 # ---------------------------------------------------------------------------
 # Helper: copy a file, backing up the target if it already exists

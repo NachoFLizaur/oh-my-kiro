@@ -1,14 +1,11 @@
 #!/usr/bin/env node
 
 // Oh-My-Kiro CLI Installer
-// Usage: npx oh-my-kiro [--global] [--force] [--help]
-//   --global  Install to ~/.kiro/ (available in all projects)
-//   --force   Overwrite existing files without prompting
-//   --help    Show this help message
-//
-// To uninstall, remove the installed .kiro/ directory:
-//   Local:  rm -rf .kiro/
-//   Global: rm -rf ~/.kiro/
+// Usage: npx oh-my-kiro [--global] [--force] [--uninstall] [--help]
+//   --global     Install/uninstall to/from ~/.kiro/ (available in all projects)
+//   --force      Overwrite existing files without prompting (or skip confirmation on uninstall)
+//   --uninstall  Remove Oh-My-Kiro files (only ours — never the whole .kiro/)
+//   --help       Show this help message
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -45,6 +42,7 @@ const error = (msg) => process.stderr.write(`${RED}[error]${RESET} ${msg}\n`);
 // ---------------------------------------------------------------------------
 let globalInstall = false;
 let force = false;
+let uninstall = false;
 
 // ---------------------------------------------------------------------------
 // Argument parsing
@@ -59,17 +57,17 @@ for (const arg of args) {
     case '--force':
       force = true;
       break;
+    case '--uninstall':
+      uninstall = true;
+      break;
     case '--help':
     case '-h':
       process.stdout.write(`Oh-My-Kiro Installer
-Usage: npx oh-my-kiro [--global] [--force] [--help]
-  --global  Install to ~/.kiro/ (available in all projects)
-  --force   Overwrite existing files without prompting
-  --help    Show this help message
-
-To uninstall, remove the installed .kiro/ directory:
-  Local:  rm -rf .kiro/
-  Global: rm -rf ~/.kiro/
+Usage: npx oh-my-kiro [--global] [--force] [--uninstall] [--help]
+  --global     Install/uninstall to/from ~/.kiro/ (available in all projects)
+  --force      Overwrite existing files without prompting (or skip confirmation on uninstall)
+  --uninstall  Remove Oh-My-Kiro files (only ours — never the whole .kiro/)
+  --help       Show this help message
 `);
       process.exit(0);
       break;
@@ -86,6 +84,176 @@ To uninstall, remove the installed .kiro/ directory:
 const TARGET_DIR = globalInstall
   ? path.join(os.homedir(), '.kiro')
   : path.join(process.cwd(), '.kiro');
+
+// ---------------------------------------------------------------------------
+// Uninstall logic
+// ---------------------------------------------------------------------------
+if (uninstall) {
+  process.stdout.write(`\n${BOLD}  Oh-My-Kiro Uninstaller${RESET}\n`);
+  process.stdout.write(`  Target: ${BOLD}${TARGET_DIR}${RESET}\n\n`);
+
+  // Check if target directory exists at all
+  if (!fs.existsSync(TARGET_DIR)) {
+    warn(`Target directory does not exist: ${TARGET_DIR}`);
+    info('Nothing to uninstall.');
+    process.exit(0);
+  }
+
+  // File manifest — must match what install creates
+  const AGENT_FILES = [
+    'prometheus.json', 'atlas.json', 'sisyphus.json',
+    'omk-explorer.json', 'omk-metis.json', 'omk-researcher.json',
+    'omk-reviewer.json', 'omk-sisyphus-jr.json',
+  ];
+  const PROMPT_FILES = [
+    'prometheus.md', 'atlas.md', 'sisyphus.md',
+    'omk-explorer.md', 'omk-metis.md', 'omk-researcher.md',
+    'omk-reviewer.md', 'omk-sisyphus-jr.md',
+  ];
+  const HOOK_FILES = [
+    'agent-spawn.sh', 'pre-tool-use.sh',
+    'prometheus-read-guard.sh', 'prometheus-write-guard.sh',
+  ];
+  const SKILL_DIRS = ['git-operations', 'code-review', 'frontend-ux'];
+
+  // Confirmation prompt (unless --force)
+  if (!force) {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    const answer = await rl.question(`  This will remove Oh-My-Kiro files from ${TARGET_DIR}. Continue? [y/N] `);
+    rl.close();
+    if (!/^y(es)?$/i.test(answer)) {
+      info('Uninstall cancelled.');
+      process.exit(0);
+    }
+    process.stdout.write('\n');
+  }
+
+  let removed = 0;
+  let notFound = 0;
+
+  // Helper: remove a single file, count result
+  function removeFile(filePath) {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+      removed++;
+      return true;
+    }
+    notFound++;
+    return false;
+  }
+
+  // Helper: remove directory if it exists and is empty
+  function removeDirIfEmpty(dirPath) {
+    if (fs.existsSync(dirPath) && fs.statSync(dirPath).isDirectory()) {
+      const entries = fs.readdirSync(dirPath);
+      if (entries.length === 0) {
+        fs.rmdirSync(dirPath);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // --- Agents ---
+  info('Removing agents...');
+  for (const f of AGENT_FILES) {
+    removeFile(path.join(TARGET_DIR, 'agents', f));
+    // Also remove any .bak files we may have created
+    removeFile(path.join(TARGET_DIR, 'agents', `${f}.bak`));
+  }
+
+  // --- Prompts ---
+  info('Removing prompts...');
+  for (const f of PROMPT_FILES) {
+    removeFile(path.join(TARGET_DIR, 'prompts', f));
+    removeFile(path.join(TARGET_DIR, 'prompts', `${f}.bak`));
+  }
+
+  // --- Steering (entire omk/ directory is ours) ---
+  info('Removing steering files...');
+  const steeringOmkDir = path.join(TARGET_DIR, 'steering', 'omk');
+  if (fs.existsSync(steeringOmkDir) && fs.statSync(steeringOmkDir).isDirectory()) {
+    fs.rmSync(steeringOmkDir, { recursive: true });
+    // Count the files that were inside
+    removed++; // count as one unit (the directory)
+  } else {
+    notFound++;
+  }
+
+  // --- Hooks ---
+  info('Removing hooks...');
+  for (const f of HOOK_FILES) {
+    removeFile(path.join(TARGET_DIR, 'hooks', f));
+    removeFile(path.join(TARGET_DIR, 'hooks', `${f}.bak`));
+  }
+
+  // --- Skills (entire skill directories are ours) ---
+  info('Removing skills...');
+  for (const skill of SKILL_DIRS) {
+    const skillDir = path.join(TARGET_DIR, 'skills', skill);
+    if (fs.existsSync(skillDir) && fs.statSync(skillDir).isDirectory()) {
+      fs.rmSync(skillDir, { recursive: true });
+      removed++;
+    } else {
+      notFound++;
+    }
+  }
+
+  // --- Runtime .gitkeep files ---
+  info('Removing runtime files...');
+  removeFile(path.join(TARGET_DIR, 'plans', '.gitkeep'));
+  removeFile(path.join(TARGET_DIR, 'notepads', '.gitkeep'));
+
+  // --- Clean up empty directories (bottom-up) ---
+  info('Cleaning up empty directories...');
+  const dirsToCheck = [
+    path.join(TARGET_DIR, 'agents'),
+    path.join(TARGET_DIR, 'prompts'),
+    path.join(TARGET_DIR, 'steering'),
+    path.join(TARGET_DIR, 'hooks'),
+    path.join(TARGET_DIR, 'skills'),
+    path.join(TARGET_DIR, 'plans'),
+    path.join(TARGET_DIR, 'notepads'),
+  ];
+
+  let dirsRemoved = 0;
+  for (const dir of dirsToCheck) {
+    if (removeDirIfEmpty(dir)) {
+      dirsRemoved++;
+    }
+  }
+
+  // --- Summary ---
+  process.stdout.write('\n');
+  process.stdout.write(`${GREEN}${BOLD}  Uninstall complete!${RESET}\n\n`);
+  process.stdout.write(`  Files/dirs removed: ${BOLD}${removed}${RESET}\n`);
+  if (notFound > 0) {
+    process.stdout.write(`  Already absent:     ${BOLD}${notFound}${RESET}\n`);
+  }
+  if (dirsRemoved > 0) {
+    process.stdout.write(`  Empty dirs cleaned: ${BOLD}${dirsRemoved}${RESET}\n`);
+  }
+
+  // Check what's left
+  if (fs.existsSync(TARGET_DIR)) {
+    const remaining = fs.readdirSync(TARGET_DIR);
+    if (remaining.length > 0) {
+      process.stdout.write(`\n  ${YELLOW}Remaining items in ${TARGET_DIR}:${RESET}\n`);
+      for (const item of remaining) {
+        process.stdout.write(`    - ${item}\n`);
+      }
+      process.stdout.write(`\n  These are not Oh-My-Kiro files and were left untouched.\n`);
+    } else {
+      process.stdout.write(`\n  ${TARGET_DIR} is now empty (but preserved).\n`);
+    }
+  }
+  process.stdout.write('\n');
+
+  process.exit(0);
+}
 
 // ---------------------------------------------------------------------------
 // Banner
