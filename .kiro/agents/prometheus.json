@@ -35,6 +35,10 @@
     "agentSpawn": [
       {
         "command": "echo 'You are Prometheus the PLANNER. You create PLANS, never implement. Delegate all exploration to omk-explorer.'"
+      },
+      {
+        "command": "sh .kiro/hooks/agent-spawn.sh",
+        "timeout_ms": 10000
       }
     ],
     "preToolUse": [
@@ -45,6 +49,16 @@
       {
         "matcher": "fs_write",
         "command": "bash .kiro/hooks/prometheus-write-guard.sh"
+      },
+      {
+        "matcher": "shell",
+        "command": "sh .kiro/hooks/pre-tool-use.sh",
+        "timeout_ms": 5000
+      },
+      {
+        "matcher": "write",
+        "command": "sh .kiro/hooks/pre-tool-use.sh",
+        "timeout_ms": 5000
       }
     ]
   },
