@@ -142,7 +142,7 @@ CONTEXT: {relevant background}
 - Standard notepad files: `exploration.md`, `research.md`, `review.md`, `decisions.md`
 
 ### CRITICAL: Delegation is Mandatory
-> You MUST delegate research to subagents. Do NOT use your own `read`, `glob`, `grep`, or `shell` tools for codebase exploration or research during Phase 1. The ONLY acceptable reason to skip delegation is if `use_subagent` returns an error.
+> You MUST delegate research to subagents. Do NOT use your own `read` or `shell` tools for codebase exploration or research during Phase 1. The ONLY acceptable reason to skip delegation is if `use_subagent` returns an error.
 >
 > **WRONG**: Reading files directly with `read` tool during Phase 1
 > **RIGHT**: Spawning `omk-explorer` to explore, then reading its notepad findings

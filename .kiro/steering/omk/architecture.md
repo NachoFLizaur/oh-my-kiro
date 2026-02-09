@@ -1,7 +1,7 @@
 # Oh-My-Kiro — Architecture
 
 ## Overview
-Oh-My-Kiro is a multi-agent orchestration system built on three main agents and six specialized subagents. The architecture separates planning from execution through disk-based plan files, enabling human oversight and structured workflows.
+Oh-My-Kiro is a multi-agent orchestration system built on three main agents and five specialized subagents. The architecture separates planning from execution through disk-based plan files, enabling human oversight and structured workflows.
 
 The system operates through three distinct interaction patterns:
 - **Planning sessions** (Prometheus): Research and plan generation
@@ -39,7 +39,6 @@ The system operates through three distinct interaction patterns:
 - Reads and parses plan files from `.kiro/plans/`
 - Delegates implementation tasks to omk-sisyphus-jr
 - Coordinates code reviews via omk-reviewer
-- Handles quick fixes through omk-quick
 - Verifies completion and updates plan status
 - **Never writes code directly** (restricted to `.kiro/` paths only)
 
@@ -99,13 +98,6 @@ The system operates through three distinct interaction patterns:
 - Handles complex multi-file changes
 - **Write access**: Full filesystem access
 
-### omk-quick
-**Specialization**: Quick fixes and minor changes
-- Handles small, focused changes
-- Bug fixes and minor improvements
-- Simple refactoring tasks
-- **Write access**: Full filesystem access
-
 ## Delegation Flows
 
 ### Planning Flow (Prometheus)
@@ -123,8 +115,7 @@ User Request → Prometheus
 Plan File → Atlas
     ├── omk-explorer (task-specific exploration)
     ├── omk-sisyphus-jr (implementation)
-    ├── omk-reviewer (code review)
-    └── omk-quick (minor fixes)
+    └── omk-reviewer (code review)
          ↓
     Completed Implementation
 ```
@@ -169,7 +160,7 @@ Filesystem access is carefully controlled to maintain system integrity:
 - Read-only access to user code
 - Prevents accidental modifications during analysis
 
-**Execution Subagents (sisyphus-jr, quick)**:
+**Execution Subagents (sisyphus-jr)**:
 - Full filesystem access
 - Can create, modify, and delete any files
 - Trusted with actual implementation
