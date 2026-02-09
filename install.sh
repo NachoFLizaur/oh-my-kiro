@@ -442,4 +442,4 @@ else
 fi
 printf "  2. Start a conversation with the ${BOLD}Prometheus${RESET} agent for planning.\n"
 printf "  3. Use ${BOLD}Sisyphus${RESET} for execution or ${BOLD}Atlas${RESET} for exploration.\n"
-printf "\n  Docs: https://github.com/nflizaur/oh-my-kiro\n\n"
+printf "\n  Docs: https://github.com/NachoFLizaur/oh-my-kiro\n\n"

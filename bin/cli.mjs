@@ -526,4 +526,4 @@ if (globalInstall) {
 }
 process.stdout.write(`  2. Start a conversation with the ${BOLD}Prometheus${RESET} agent for planning.\n`);
 process.stdout.write(`  3. Use ${BOLD}Sisyphus${RESET} for execution or ${BOLD}Atlas${RESET} for exploration.\n`);
-process.stdout.write('\n  Docs: https://github.com/nflizaur/oh-my-kiro\n\n');
+process.stdout.write('\n  Docs: https://github.com/NachoFLizaur/oh-my-kiro\n\n');

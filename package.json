@@ -26,9 +26,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nflizaur/oh-my-kiro"
+    "url": "https://github.com/NachoFLizaur/oh-my-kiro"
   },
-  "homepage": "https://github.com/nflizaur/oh-my-kiro#readme",
+  "homepage": "https://github.com/NachoFLizaur/oh-my-kiro#readme",
   "engines": {
     "node": ">=18.0.0"
   }

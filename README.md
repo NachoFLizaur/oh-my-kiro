@@ -141,7 +141,7 @@ npx oh-my-kiro --force
 ### Alternative: Clone + install script
 
 ```bash
-git clone https://github.com/nflizaur/oh-my-kiro.git
+git clone https://github.com/NachoFLizaur/oh-my-kiro.git
 cd oh-my-kiro
 ./install.sh            # local install
 ./install.sh --global   # global install

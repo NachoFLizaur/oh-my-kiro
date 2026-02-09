@@ -19,7 +19,7 @@ There are several ways to help:
 - **Improve documentation** — Steering files, README, this guide.
 - **Propose new subagents** — If you see a gap in the agent roster, open an issue to discuss it first.
 
-Open an [issue](https://github.com/nflizaur/oh-my-kiro/issues) for bug reports and feature proposals. Submit a [pull request](https://github.com/nflizaur/oh-my-kiro/pulls) for concrete changes. Use [discussions](https://github.com/nflizaur/oh-my-kiro/discussions) for open-ended questions and ideas.
+Open an [issue](https://github.com/NachoFLizaur/oh-my-kiro/issues) for bug reports and feature proposals. Submit a [pull request](https://github.com/NachoFLizaur/oh-my-kiro/pulls) for concrete changes. Use [discussions](https://github.com/NachoFLizaur/oh-my-kiro/discussions) for open-ended questions and ideas.
 
 ---
 
@@ -28,7 +28,7 @@ Open an [issue](https://github.com/nflizaur/oh-my-kiro/issues) for bug reports a
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/nflizaur/oh-my-kiro.git
+   git clone https://github.com/NachoFLizaur/oh-my-kiro.git
    cd oh-my-kiro
    ```
 
