@@ -23,6 +23,7 @@
     }
   },
   "resources": [
-    "file://.kiro/steering/omk/conventions.md"
+    "file://.kiro/steering/omk/conventions.md",
+    "skill://.kiro/skills/**/SKILL.md"
   ]
 }
