@@ -106,14 +106,16 @@ DRAFT  →  READY  →  IN_PROGRESS  →  COMPLETE
 **1. Install**
 
 ```bash
-npx oh-my-kiro
+npx oh-my-kiro@latest
 ```
 
 **Already have Oh-My-Kiro?** Update to the latest version:
 
 ```bash
-npx oh-my-kiro --update
+npx oh-my-kiro@latest --update
 ```
+
+> Always use `@latest` — `npx` caches packages, so without it you may get a stale version.
 
 **2. Open your project in Kiro**
 
@@ -130,7 +132,7 @@ npx oh-my-kiro --update
 ### Recommended: npx (no clone needed)
 
 ```bash
-npx oh-my-kiro
+npx oh-my-kiro@latest
 ```
 
 This copies the `.kiro/` directory into your current working directory. Agents are available only in that project.
@@ -138,7 +140,7 @@ This copies the `.kiro/` directory into your current working directory. Agents a
 **Global install** (all projects):
 
 ```bash
-npx oh-my-kiro --global
+npx oh-my-kiro@latest --global
 ```
 
 Installs to `~/.kiro/`, making agents available in every project you open with Kiro.
@@ -146,7 +148,7 @@ Installs to `~/.kiro/`, making agents available in every project you open with K
 **Overwrite existing files** (skip prompts):
 
 ```bash
-npx oh-my-kiro --force
+npx oh-my-kiro@latest --force
 ```
 
 ### Alternative: Clone + install script
