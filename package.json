@@ -1,6 +1,6 @@
 {
   "name": "oh-my-kiro",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Multi-agent orchestration for Kiro — plan, execute, and review with specialized AI agents",
   "bin": {
     "oh-my-kiro": "bin/cli.mjs"
