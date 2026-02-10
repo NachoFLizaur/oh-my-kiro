@@ -1,7 +1,7 @@
 {
-  "name": "omk-researcher",
-  "description": "Research subagent — investigates technical approaches and provides evidence-based recommendations",
-  "prompt": "file://../prompts/omk-researcher.md",
+  "name": "ghost-explorer",
+  "description": "Ghost Explorer - codebase exploration specialist",
+  "prompt": "file://../prompts/ghost-explorer.md",
   "tools": [
     "read",
     "write",

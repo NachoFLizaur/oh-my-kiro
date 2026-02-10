@@ -1,7 +1,7 @@
 {
-  "name": "omk-sisyphus-jr",
-  "description": "Task executor subagent — writes code, creates files, executes implementation tasks with precision",
-  "prompt": "file://../prompts/omk-sisyphus-jr.md",
+  "name": "ghost-implementer",
+  "description": "Ghost Implementer - code implementation specialist",
+  "prompt": "file://../prompts/ghost-implementer.md",
   "tools": [
     "read",
     "write",

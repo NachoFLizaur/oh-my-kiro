@@ -1,7 +1,7 @@
 {
-  "name": "omk-metis",
-  "description": "pre-plan analysis subagent — analyzes user requests before plan generation, identifies hidden intentions, ambiguities, and risks",
-  "prompt": "file://../prompts/omk-metis.md",
+  "name": "ghost-analyst",
+  "description": "Ghost Analyst - pre-plan analysis specialist",
+  "prompt": "file://../prompts/ghost-analyst.md",
   "tools": [
     "read",
     "write",

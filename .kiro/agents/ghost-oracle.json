@@ -1,7 +1,7 @@
 {
-  "name": "omk-oracle",
-  "description": "Strategic advisor subagent — read-only architecture advice, debugging escalation, and self-review with pragmatic minimalism",
-  "prompt": "file://../prompts/omk-oracle.md",
+  "name": "ghost-oracle",
+  "description": "Ghost Oracle - strategic advisory specialist",
+  "prompt": "file://../prompts/ghost-oracle.md",
   "tools": [
     "read",
     "write",

@@ -1,7 +1,7 @@
 {
-  "name": "omk-explorer",
-  "description": "Codebase exploration subagent — discovers files, patterns, and structure",
-  "prompt": "file://../prompts/omk-explorer.md",
+  "name": "ghost-reviewer",
+  "description": "Ghost Reviewer - code review specialist",
+  "prompt": "file://../prompts/ghost-reviewer.md",
   "tools": [
     "read",
     "write",
@@ -23,6 +23,7 @@
     }
   },
   "resources": [
-    "file://.kiro/steering/omk/conventions.md"
+    "file://.kiro/steering/omk/conventions.md",
+    "skill://.kiro/skills/**/SKILL.md"
   ]
 }

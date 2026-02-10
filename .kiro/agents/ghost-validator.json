@@ -1,7 +1,7 @@
 {
-  "name": "omk-momus",
-  "description": "Post-plan validator subagent — strict review with approval bias, only rejects for true blockers (max 3)",
-  "prompt": "file://../prompts/omk-momus.md",
+  "name": "ghost-validator",
+  "description": "Ghost Validator - plan validation specialist",
+  "prompt": "file://../prompts/ghost-validator.md",
   "tools": [
     "read",
     "write",

@@ -1,7 +1,7 @@
 {
-  "name": "omk-reviewer",
-  "description": "Code review subagent — reviews quality, runs tests, validates implementations",
-  "prompt": "file://../prompts/omk-reviewer.md",
+  "name": "ghost-researcher",
+  "description": "Ghost Researcher - technical research specialist",
+  "prompt": "file://../prompts/ghost-researcher.md",
   "tools": [
     "read",
     "write",
@@ -23,7 +23,6 @@
     }
   },
   "resources": [
-    "file://.kiro/steering/omk/conventions.md",
-    "skill://.kiro/skills/**/SKILL.md"
+    "file://.kiro/steering/omk/conventions.md"
   ]
 }
