@@ -1,3 +1,5 @@
+<div align="center">
+
 # Oh-My-Kiro
 
 **Multi-agent orchestration for [Kiro](https://kiro.dev).**
@@ -5,7 +7,10 @@
 Structured planning. Delegated execution. Defense-in-depth guardrails.
 
 [![npm](https://img.shields.io/npm/v/oh-my-kiro)](https://www.npmjs.com/package/oh-my-kiro)
+[![Bun](https://img.shields.io/badge/Bun-compatible-pink.svg)](https://bun.sh)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+</div>
 
 ---
 
@@ -13,20 +18,21 @@ Structured planning. Delegated execution. Defense-in-depth guardrails.
 
 - [What is Oh-My-Kiro?](#what-is-oh-my-kiro)
 - [Architecture Overview](#architecture-overview)
+  - [Main Agents](#main-agents)
+  - [Subagents](#subagents)
 - [Quick Start](#quick-start)
 - [Installation](#installation)
 - [Usage](#usage)
-  - [Planning with Prometheus](#planning-with-prometheus)
-  - [Executing Plans with Atlas](#executing-plans-with-atlas)
-  - [Direct Tasks with Sisyphus](#direct-tasks-with-sisyphus)
+  - [Planning with Phantom](#planning-with-phantom)
+  - [Executing Plans with Revenant](#executing-plans-with-revenant)
+  - [Direct Tasks with Wraith](#direct-tasks-with-wraith)
+- [Plan File Format](#plan-file-format)
+- [Delegation Format](#delegation-format)
 - [Configuration](#configuration)
   - [Agent Configs](#agent-configs)
   - [Steering Files](#steering-files)
   - [Skills](#skills)
   - [Hooks](#hooks)
-- [Plan File Format](#plan-file-format)
-  - [A Complete Plan File](#a-complete-plan-file)
-- [Subagents](#subagents)
 - [Customization](#customization)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
@@ -51,42 +57,66 @@ Oh-My-Kiro is an open-source multi-agent orchestration system for [Kiro](https:/
 ## Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                         USER                                    │
-│                                                                 │
-│   ctrl+p              ctrl+a              ctrl+e                │
-│     │                   │                   │                   │
-│     ▼                   ▼                   ▼                   │
-│ ┌───────────┐     ┌───────────┐     ┌───────────────┐          │
-│ │ Prometheus │     │   Atlas   │     │   Sisyphus    │          │
-│ │ (Planner)  │     │(Plan Exec)│     │(Direct Exec)  │          │
-│ └─────┬─────┘     └─────┬─────┘     └───────┬───────┘          │
-│       │                 │                     │                  │
-│       │  writes         │  reads              │                  │
-│       ▼                 ▼                     │                  │
-│   ┌─────────────────────────┐                │                  │
-│   │  .kiro/plans/{name}.md  │                │                  │
-│   └─────────────────────────┘                │                  │
-│                                              │                  │
-│  Planning subagents          Execution subagents                │
-│  ┌──────────────┐            ┌──────────────┐                   │
-│  │  omk-metis   │◀─ Prom.   │omk-sisyphus-jr│◀─ Atlas/Sis.    │
-│  │(pre-analysis)│            │ (writes code) │                  │
-│  └──────────────┘            └──────────────┘                   │
-│  ┌──────────────┐            ┌──────────────┐                   │
-│  │  omk-momus   │◀─ Prom.   │ omk-reviewer │◀─ Atlas/Sis.     │
-│  │(plan review) │ optional   └──────────────┘                   │
-│  └──────────────┘                                               │
-│  ┌──────────────┐            ┌──────────────┐                   │
-│  │ omk-explorer │◀─ all      │  omk-oracle  │◀─ Atlas/Sis.    │
-│  └──────────────┘            │  (advisory)  │                   │
-│  ┌──────────────┐            └──────────────┘                   │
-│  │omk-researcher│◀─ Prom.                                       │
-│  └──────────────┘                                               │
-└─────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                             USER                                 │
+│                                                                  │
+│      ctrl+p                ctrl+a                ctrl+e          │
+│         │                     │                     │            │
+│         ▼                     ▼                     ▼            │
+│   ┌──────────┐          ┌──────────┐          ┌──────────┐       │
+│   │ Phantom  │          │ Revenant │          │  Wraith  │       │
+│   │(Planner) │          │(Executor)│          │ (Direct) │       │
+│   └────┬─────┘          └────┬─────┘          └────┬─────┘       │
+│        │                     │                     │             │
+│        │ writes              │ reads               │             │
+│        ▼                     ▼                     │             │
+│   ┌─────────────────────────────┐                  │             │
+│   │  .kiro/plans/{name}.md      │                  │             │
+│   └─────────────────────────────┘                  │             │
+│                                                    ▼             │
+│  Planning subagents              Execution subagents             │
+│  ┌─────────────────┐            ┌─────────────────┐              │
+│  │ ghost-analyst   │◀─Phantom   │ghost-implementer│◀─Revenant    │
+│  │ (pre-analysis)  │            │  (writes code)  │  /Wraith     │
+│  └─────────────────┘            └─────────────────┘              │
+│  ┌─────────────────┐            ┌─────────────────┐              │
+│  │ ghost-validator │◀─Phantom   │ ghost-reviewer  │◀─Revenant    │
+│  │ (plan review)   │ (optional) │ (code review)   │  /Wraith     │
+│  └─────────────────┘            └─────────────────┘              │
+│  ┌─────────────────┐            ┌─────────────────┐              │
+│  │ ghost-explorer  │◀─all       │  ghost-oracle   │◀─Revenant    │
+│  │ (exploration)   │  agents    │   (advisory)    │  /Wraith     │
+│  └─────────────────┘            └─────────────────┘              │
+│  ┌─────────────────┐                                             │
+│  │ghost-researcher │◀─Phantom                                    │
+│  │   (research)    │                                             │
+│  └─────────────────┘                                             │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 **3 main agents** orchestrate work. **7 subagents** do the actual work. The plan file on disk is the sole handoff between planning and execution.
+
+### Main Agents
+
+| Agent | Shortcut | Role |
+|-------|----------|------|
+| **Phantom** | `ctrl+p` | Plans work through interviews and research, generates plan files |
+| **Revenant** | `ctrl+a` | Reads and executes plan files autonomously |
+| **Wraith** | `ctrl+e` | Handles direct tasks without formal planning |
+
+### Subagents
+
+Subagents are specialized agents that main agents delegate to. Users never invoke subagents directly.
+
+| Subagent | Role | Delegated by |
+|----------|------|-------------|
+| **ghost-explorer** | Codebase exploration and analysis | Phantom, Revenant, Wraith |
+| **ghost-analyst** | Pre-plan analysis (mandatory before planning) | Phantom |
+| **ghost-validator** | Post-plan validation (optional, defaults to APPROVE) | Phantom |
+| **ghost-oracle** | Strategic advisory and debugging escalation | Revenant, Wraith |
+| **ghost-researcher** | Technical research and best practices | Phantom |
+| **ghost-reviewer** | Code review and quality checks | Revenant, Wraith |
+| **ghost-implementer** | Task implementation (writes code) | Revenant, Wraith |
 
 ### Plan Lifecycle
 
@@ -94,9 +124,9 @@ Oh-My-Kiro is an open-source multi-agent orchestration system for [Kiro](https:/
 DRAFT  →  READY  →  IN_PROGRESS  →  COMPLETE
   │         │            │              │
   │         │            │              └── All tasks verified
-  │         │            └── Atlas/Sisyphus executing
+  │         │            └── Revenant/Wraith executing
   │         └── User reviewed and approved
-  └── Prometheus drafting
+  └── Phantom drafting
 ```
 
 ---
@@ -119,7 +149,7 @@ npx oh-my-kiro@latest --update
 
 **2. Open your project in Kiro**
 
-**3. Start planning with Prometheus (`ctrl+p`)**
+**3. Start planning with Phantom (`ctrl+p`)**
 
 ---
 
@@ -196,30 +226,32 @@ npx oh-my-kiro@latest --update --dry-run
 
 ```bash
 # Local
-rm -rf .kiro/
+npx oh-my-kiro@latest --uninstall
 
 # Global
-rm -rf ~/.kiro/
+npx oh-my-kiro@latest --uninstall --global
 ```
+
+The `--uninstall` flag removes only Oh-My-Kiro files tracked in the manifest — it never deletes the entire `.kiro/` directory, preserving any custom agents or files you've added.
 
 ---
 
 ## Usage
 
-### Planning with Prometheus
+### Planning with Phantom
 
 **Shortcut:** `ctrl+p`
 
-Prometheus is the planner. It interviews you to understand requirements, delegates research to subagents, and produces a structured plan file. It **never** writes code.
+Phantom is the planner. It interviews you to understand requirements, delegates research to subagents, and produces a structured plan file. It **never** writes code.
 
 **Workflow:**
 
-1. Press `ctrl+p` to start Prometheus
+1. Press `ctrl+p` to start Phantom
 2. Describe what you want to build
-3. Prometheus delegates to `omk-metis` for **mandatory pre-analysis** (identifies hidden intentions, ambiguities, and risks)
-4. Prometheus asks clarifying questions informed by Metis's analysis
-5. It delegates exploration to `omk-explorer` and research to `omk-researcher`
-6. It drafts a plan and optionally sends it to `omk-momus` for a **High Accuracy Review** (you choose)
+3. Phantom delegates to `ghost-analyst` for **mandatory pre-analysis** (identifies hidden intentions, ambiguities, and risks)
+4. Phantom asks clarifying questions informed by ghost-analyst's analysis
+5. It delegates exploration to `ghost-explorer` and research to `ghost-researcher`
+6. It drafts a plan and optionally sends it to `ghost-validator` for a **High Accuracy Review** (you choose)
 7. The final plan is written to `.kiro/plans/{plan-name}.md`
 8. You review the plan and approve it
 
@@ -228,7 +260,7 @@ Prometheus is the planner. It interviews you to understand requirements, delegat
 ```
 You:  I need to add user authentication to my Express API.
 
-Prometheus:  Before I create a plan, I have some questions:
+Phantom:  Before I create a plan, I have some questions:
   1. What auth method — JWT, session-based, or OAuth?
   2. Which endpoints need protection?
   3. Do you need role-based access control?
@@ -238,34 +270,34 @@ You:  JWT with refresh tokens. Protect all /api/* routes except
       /api/auth/login and /api/auth/register. No roles for now.
       We have a User model in src/models/user.ts.
 
-Prometheus:  Got it. Let me analyze and explore the codebase.
-  [Delegates to omk-metis for pre-analysis of the request]
-  [Delegates to omk-explorer to map the existing routes and models]
-  [Delegates to omk-researcher to check best practices for JWT refresh]
+Phantom:  Got it. Let me analyze and explore the codebase.
+  [Delegates to ghost-analyst for pre-analysis of the request]
+  [Delegates to ghost-explorer to map the existing routes and models]
+  [Delegates to ghost-researcher to check best practices for JWT refresh]
   [Writes .kiro/plans/add-jwt-auth.md]
-  [Offers optional High Accuracy Review via omk-momus]
+  [Offers optional High Accuracy Review via ghost-validator]
 
-Prometheus:  Plan is ready at .kiro/plans/add-jwt-auth.md — 6 tasks,
+Phantom:  Plan is ready at .kiro/plans/add-jwt-auth.md — 6 tasks,
              estimated ~2 hours. Please review and let me know if
              anything needs changes.
 ```
 
-> After reviewing the plan, switch to Atlas (`ctrl+a`) to execute it. See [the complete plan file example](#a-complete-plan-file) below.
+> After reviewing the plan, switch to Revenant (`ctrl+a`) to execute it. See [the complete plan file example](#a-complete-plan-file) below.
 
-### Executing Plans with Atlas
+### Executing Plans with Revenant
 
 **Shortcut:** `ctrl+a`
 
-Atlas reads existing plan files and executes them task by task. It delegates all implementation to subagents and independently verifies their work. When stuck or facing architectural decisions, it can consult `omk-oracle` for strategic advice.
+Revenant reads existing plan files and executes them task by task. It delegates all implementation to subagents and independently verifies their work. When stuck or facing architectural decisions, it can consult `ghost-oracle` for strategic advice.
 
 **Workflow:**
 
-1. Press `ctrl+a` to start Atlas
-2. Atlas lists available plans from `.kiro/plans/`
+1. Press `ctrl+a` to start Revenant
+2. Revenant lists available plans from `.kiro/plans/`
 3. Tell it which plan to execute (or it picks the most recent)
-4. Atlas delegates each task to `omk-sisyphus-jr` (implementation) or `omk-explorer` (analysis)
-5. After each task, Atlas independently verifies the work — it never trusts subagent self-reports
-6. Atlas sends completed work to `omk-reviewer` for quality checks
+4. Revenant delegates each task to `ghost-implementer` (implementation) or `ghost-explorer` (analysis)
+5. After each task, Revenant independently verifies the work — it never trusts subagent self-reports
+6. Revenant sends completed work to `ghost-reviewer` for quality checks
 7. Plan status is updated as tasks complete
 
 **Example — Executing the auth plan:**
@@ -273,44 +305,44 @@ Atlas reads existing plan files and executes them task by task. It delegates all
 ```
 You:  Execute the JWT auth plan.
 
-Atlas:  Found .kiro/plans/add-jwt-auth.md (status: READY).
+Revenant:  Found .kiro/plans/add-jwt-auth.md (status: READY).
         6 tasks. Starting execution.
 
-Atlas:  Task 1/6 — Create auth middleware.
-  [Delegates to omk-sisyphus-jr with full task context]
-  [omk-sisyphus-jr creates src/middleware/auth.ts]
-  [Atlas independently reads the file and runs the tests]
+Revenant:  Task 1/6 — Create auth middleware.
+  [Delegates to ghost-implementer with full task context]
+  [ghost-implementer creates src/middleware/auth.ts]
+  [Revenant independently reads the file and runs the tests]
   ✓ Task 1 verified. Moving to Task 2.
 
-Atlas:  Task 4/6 — Add refresh token endpoint.
-  [Delegates to omk-sisyphus-jr]
-  [omk-sisyphus-jr creates the endpoint]
-  [Atlas runs verification: curl + test suite]
+Revenant:  Task 4/6 — Add refresh token endpoint.
+  [Delegates to ghost-implementer]
+  [ghost-implementer creates the endpoint]
+  [Revenant runs verification: curl + test suite]
   ✗ Verification failed — refresh token not persisted.
   [Re-delegates with correction context]
   ✓ Task 4 verified on second attempt.
 
-Atlas:  All 6 tasks complete. Sending to omk-reviewer for
+Revenant:  All 6 tasks complete. Sending to ghost-reviewer for
         final quality check.
-  [omk-reviewer approves]
+  [ghost-reviewer approves]
   Plan status → COMPLETE.
 ```
 
-> **Key point:** Atlas never trusts subagent self-reports. It reads the actual files and runs the verification commands from the plan.
+> **Key point:** Revenant never trusts subagent self-reports. It reads the actual files and runs the verification commands from the plan.
 
-> **Tip:** After finishing a plan with Prometheus, run `/clear` before switching to Atlas to free up context.
+> **Tip:** After finishing a plan with Phantom, run `/clear` before switching to Revenant to free up context.
 
-### Direct Tasks with Sisyphus
+### Direct Tasks with Wraith
 
 **Shortcut:** `ctrl+e`
 
-Sisyphus handles direct tasks that don't need a full plan. Quick fixes, explorations, one-off tasks.
+Wraith handles direct tasks that don't need a full plan. Quick fixes, explorations, one-off tasks.
 
 **Workflow:**
 
-1. Press `ctrl+e` to start Sisyphus
+1. Press `ctrl+e` to start Wraith
 2. Describe your task directly
-3. For significant work, Sisyphus delegates to subagents
+3. For significant work, Wraith delegates to subagents
 4. For simple questions or small tasks, it may handle them directly
 
 **Good for:**
@@ -325,16 +357,16 @@ Sisyphus handles direct tasks that don't need a full plan. Quick fixes, explorat
 ```
 You:  The login error message says "Authetication failed" — fix the typo.
 
-Sisyphus:  On it.
-  [Delegates to omk-sisyphus-jr: fix typo in login error message]
-  [omk-sisyphus-jr finds the string in src/auth/login.ts, fixes it]
-  [Sisyphus verifies the change]
+Wraith:  On it.
+  [Delegates to ghost-implementer: fix typo in login error message]
+  [ghost-implementer finds the string in src/auth/login.ts, fixes it]
+  [Wraith verifies the change]
   Done — "Authetication" → "Authentication" in src/auth/login.ts:47.
 ```
 
-> No plan file, no interview. For small, well-defined tasks, Sisyphus is the fastest path.
+> No plan file, no interview. For small, well-defined tasks, Wraith is the fastest path.
 
-**Not good for** (use Prometheus + Atlas instead):
+**Not good for** (use Phantom + Revenant instead):
 
 - Multi-file features
 - Architectural changes
@@ -349,23 +381,23 @@ Sisyphus:  On it.
 Agent JSON configs live in `.kiro/agents/`. Each config defines:
 
 - **tools** — Which tools the agent can use
-- **allowedPaths** — File system restrictions (e.g., Prometheus can only write to `plans/` and `notepads/`)
+- **allowedPaths** — File system restrictions (e.g., Phantom can only write to `plans/` and `notepads/`)
 - **subagent access** — Which subagents each agent can delegate to
 - **hooks** — Lifecycle hooks for runtime enforcement
 - **keyboardShortcut** — The shortcut to invoke the agent
 
 ```
 .kiro/agents/
-├── prometheus.json       # ctrl+p — The Planner
-├── atlas.json            # ctrl+a — The Plan Executor
-├── sisyphus.json         # ctrl+e — The Direct Executor
-├── omk-explorer.json     # Codebase exploration
-├── omk-metis.json        # Pre-plan analysis
-├── omk-momus.json        # Post-plan validation
-├── omk-oracle.json       # Strategic advisory
-├── omk-researcher.json   # Technical research
-├── omk-reviewer.json     # Code review
-└── omk-sisyphus-jr.json  # Task implementation
+├── phantom.json       # ctrl+p — The Planner
+├── revenant.json            # ctrl+a — The Plan Executor
+├── wraith.json         # ctrl+e — The Direct Executor
+├── ghost-explorer.json     # Codebase exploration
+├── ghost-analyst.json        # Pre-plan analysis
+├── ghost-validator.json        # Post-plan validation
+├── ghost-oracle.json       # Strategic advisory
+├── ghost-researcher.json   # Technical research
+├── ghost-reviewer.json     # Code review
+└── ghost-implementer.json  # Task implementation
 ```
 
 ### Steering Files
@@ -401,8 +433,8 @@ Shell hooks in `.kiro/hooks/` enforce safety constraints at runtime:
 |------|---------|---------|
 | `agent-spawn.sh` | Agent starts | Injects git status + plan context |
 | `pre-tool-use.sh` | Before any tool | Blocks plan file deletion and `.kiro/` destruction |
-| `prometheus-read-guard.sh` | Prometheus reads a file | Warns when reading project files (should delegate to `omk-explorer`) |
-| `prometheus-write-guard.sh` | Prometheus writes a file | Blocks writes outside `.kiro/plans/` and `.kiro/notepads/` |
+| `phantom-read-guard.sh` | Phantom reads a file | Warns when reading project files (should delegate to `ghost-explorer`) |
+| `phantom-write-guard.sh` | Phantom writes a file | Blocks writes outside `.kiro/plans/` and `.kiro/notepads/` |
 
 ---
 
@@ -449,149 +481,11 @@ How the work should be approached.
 
 Plans are stored in `.kiro/plans/` and are **gitignored** — they are runtime artifacts, not committed to your repository.
 
-### A Complete Plan File
-
-Here's what a real plan looks like after Prometheus finishes the interview and exploration:
-
-````markdown
-# Add JWT Authentication
-
-## TL;DR
-Add JWT-based authentication with refresh tokens to the Express API.
-Protect all /api/* routes except login and register. Use the existing
-User model and add token storage to Redis.
-
-## Context
-The API currently has no authentication. All endpoints are public.
-We need to secure them before the beta launch. The team chose JWT
-with refresh tokens over session-based auth for stateless scaling.
-
-## Work Objectives
-1. Auth middleware that validates JWT on protected routes
-2. Login endpoint that returns access + refresh token pair
-3. Register endpoint with password hashing
-4. Refresh endpoint that rotates tokens
-5. Token blacklist in Redis for logout support
-
-## Scope
-### In Scope
-- JWT access tokens (15 min expiry)
-- Refresh tokens (7 day expiry) stored in Redis
-- Password hashing with bcrypt
-- /api/auth/login, /api/auth/register, /api/auth/refresh, /api/auth/logout
-
-### Out of Scope
-- Role-based access control (future plan)
-- OAuth / social login
-- Email verification
-
-## Execution Strategy
-Build bottom-up: utilities first, then middleware, then endpoints.
-Each task is independently testable.
-
-### Files to Create
-| File | Purpose |
-|------|---------|
-| `src/middleware/auth.ts` | JWT validation middleware |
-| `src/auth/tokens.ts` | Token generation and verification |
-| `src/routes/auth.ts` | Auth route handlers |
-| `tests/auth.test.ts` | Integration tests |
-
-### Files to Modify
-| File | Changes |
-|------|---------|
-| `src/models/user.ts` | Add password hash field |
-| `src/app.ts` | Mount auth routes, apply middleware |
-| `src/config.ts` | Add JWT_SECRET, REDIS_URL |
-
-## Tasks
-
-- [ ] **Task 1**: Create token utility module
-  - Files: `src/auth/tokens.ts`
-  - Details: generateAccessToken(), generateRefreshToken(),
-    verifyToken(). Use jsonwebtoken library.
-  - Verify: `npm test -- --grep "token"`
-
-- [ ] **Task 2**: Add password field to User model
-  - Files: `src/models/user.ts`
-  - Details: Add passwordHash field, pre-save hook for hashing
-  - Verify: `npm test -- --grep "User model"`
-
-- [ ] **Task 3**: Create auth middleware
-  - Files: `src/middleware/auth.ts`
-  - Details: Extract Bearer token from Authorization header,
-    verify with tokens.ts, attach user to req
-  - Verify: `npm test -- --grep "auth middleware"`
-
-- [ ] **Task 4**: Create auth route handlers
-  - Files: `src/routes/auth.ts`
-  - Details: POST /login, POST /register, POST /refresh, POST /logout
-  - Verify: `npm test -- --grep "auth routes"`
-
-- [ ] **Task 5**: Mount routes and apply middleware
-  - Files: `src/app.ts`, `src/config.ts`
-  - Details: Apply auth middleware to /api/* except /api/auth/*
-  - Verify: `npm test`
-
-- [ ] **Task 6**: Write integration tests
-  - Files: `tests/auth.test.ts`
-  - Details: Full flow — register, login, access protected route,
-    refresh token, logout, verify blacklist
-  - Verify: `npm test -- --grep "auth integration"`
-
-## Verification Strategy
-### Automated Checks
-```bash
-npm test
-npm run lint
-curl -s localhost:3000/api/users | grep -q "401"
-```
-
-### Manual Checks
-- [ ] Login returns access + refresh tokens
-- [ ] Protected route rejects expired tokens
-- [ ] Refresh endpoint rotates tokens
-- [ ] Logout blacklists the refresh token
-
-## Acceptance Criteria
-- [ ] All /api/* routes return 401 without valid token
-- [ ] Login returns JWT access token + refresh token
-- [ ] Refresh endpoint issues new token pair
-- [ ] Logout invalidates refresh token
-- [ ] All tests pass
-- [ ] No lint errors
-
-## References
-- jsonwebtoken docs: https://github.com/auth0/node-jsonwebtoken
-- Existing User model: src/models/user.ts
-
-## Notes
-- Chose bcrypt over argon2 for broader compatibility
-- Redis is already in the stack for caching — reuse for token blacklist
-- Access token expiry (15 min) is intentionally short for security
-
----
-*Plan generated by Prometheus | 2026-02-09*
-*Status: READY*
-````
-
 ---
 
-## Subagents
+## Delegation Format
 
-Subagents are specialized agents that main agents delegate to. Users never invoke subagents directly.
-
-| Subagent | Role | Delegated by |
-|----------|------|-------------|
-| **omk-explorer** | Codebase exploration and analysis — reads files, traces dependencies, maps architecture | Prometheus, Atlas, Sisyphus |
-| **omk-metis** | Pre-plan analysis — analyzes user requests before plan generation, identifies hidden intentions, ambiguities, and risks | Prometheus |
-| **omk-momus** | Post-plan validation — reviews completed plans for blocking issues, defaults to APPROVE (max 3 blockers) | Prometheus (optional) |
-| **omk-oracle** | Strategic advisory — architecture advice, debugging escalation after repeated failures, self-review of completed work | Atlas, Sisyphus |
-| **omk-researcher** | Technical research and documentation lookup — investigates libraries, APIs, best practices | Prometheus |
-| **omk-reviewer** | Code review and quality checks — reviews implementation for correctness, style, security | Atlas, Sisyphus |
-| **omk-sisyphus-jr** | Task implementation — the subagent that actually writes code, creates files, runs commands | Atlas, Sisyphus |
-
-All delegation uses a **6-section format**:
+All main agents delegate to subagents using a **6-section format**:
 
 ```
 TASK: {what to do}
@@ -612,16 +506,16 @@ Agent prompts live in `.kiro/prompts/` as markdown files. Edit them to change ag
 
 ```
 .kiro/prompts/
-├── prometheus.md         # Planner behavior
-├── atlas.md              # Plan executor behavior
-├── sisyphus.md           # Direct executor behavior
-├── omk-explorer.md       # Explorer behavior
-├── omk-metis.md          # Pre-plan analyst behavior
-├── omk-momus.md          # Post-plan validator behavior
-├── omk-oracle.md         # Strategic advisor behavior
-├── omk-researcher.md     # Researcher behavior
-├── omk-reviewer.md       # Code reviewer behavior
-└── omk-sisyphus-jr.md    # Implementer behavior
+├── phantom.md         # Planner behavior
+├── revenant.md              # Plan executor behavior
+├── wraith.md           # Direct executor behavior
+├── ghost-explorer.md       # Explorer behavior
+├── ghost-analyst.md          # Pre-plan analyst behavior
+├── ghost-validator.md          # Post-plan validator behavior
+├── ghost-oracle.md         # Strategic advisor behavior
+├── ghost-researcher.md     # Researcher behavior
+├── ghost-reviewer.md       # Code reviewer behavior
+└── ghost-implementer.md    # Implementer behavior
 ```
 
 ### Add Steering Files
@@ -659,16 +553,16 @@ Add custom shell hooks in `.kiro/hooks/` and reference them in agent JSON config
 - Check that the prompt file referenced in the config exists
 - For local installs, make sure you're in the project directory where `.kiro/` was installed
 
-### Prometheus writing code instead of planning
+### Phantom writing code instead of planning
 
-- Check that `prometheus-write-guard.sh` is executable: `chmod +x .kiro/hooks/prometheus-write-guard.sh`
-- Verify the hook is referenced in `prometheus.json` under `hooks.preToolUse`
-- Prometheus should only write to `.kiro/plans/` and `.kiro/notepads/`
+- Check that `phantom-write-guard.sh` is executable: `chmod +x .kiro/hooks/phantom-write-guard.sh`
+- Verify the hook is referenced in `phantom.json` under `hooks.preToolUse`
+- Phantom should only write to `.kiro/plans/` and `.kiro/notepads/`
 
-### Plan not found by Atlas
+### Plan not found by Revenant
 
 - Plans must be in `.kiro/plans/` with a `.md` extension
-- Check the plan status — Atlas looks for plans in `READY` or `IN_PROGRESS` state
+- Check the plan status — Revenant looks for plans in `READY` or `IN_PROGRESS` state
 - Run `ls .kiro/plans/*.md` to see available plans
 
 ### Subagent not responding

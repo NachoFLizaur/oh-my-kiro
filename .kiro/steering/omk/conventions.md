@@ -3,17 +3,17 @@
 ## File Naming
 | Element | Convention | Example |
 |---------|------------|---------|
-| Agent configs | lowercase `.json` | `prometheus.json`, `omk-explorer.json` |
-| Prompt files | match agent name `.md` | `prometheus.md`, `omk-explorer.md` |
+| Agent configs | lowercase `.json` | `phantom.json`, `ghost-explorer.json` |
+| Prompt files | match agent name `.md` | `phantom.md`, `ghost-explorer.md` |
 | Plan files | kebab-case `.md` | `add-user-auth.md`, `refactor-api.md` |
 | Steering files | kebab-case `.md` | `product.md`, `plan-format.md` |
 | Hook scripts | kebab-case `.sh` | `agent-spawn.sh`, `stop-check.sh` |
 | Skill directories | kebab-case | `git-operations/`, `code-review/` |
 
 ## Agent Naming
-- Main agents: lowercase (`prometheus`, `sisyphus`, `atlas`)
-- Subagents: `omk-` prefix (`omk-explorer`, `omk-metis`, `omk-momus`, `omk-oracle`, `omk-sisyphus-jr`)
-- The `omk-` prefix prevents collision with user's own agents
+- Main agents: lowercase (`phantom`, `wraith`, `revenant`)
+- Subagents: `ghost-` prefix (`ghost-explorer`, `ghost-analyst`, `ghost-validator`, `ghost-oracle`, `ghost-implementer`)
+- The `ghost-` prefix prevents collision with user's own agents
 
 ## Directory Structure
 ```
@@ -44,18 +44,18 @@ The notepad system provides cross-subagent memory for plan execution. Since suba
 ### File Naming
 | File | Written By | Purpose |
 |------|-----------|---------|
-| `exploration.md` | omk-explorer | Codebase exploration findings |
-| `research.md` | omk-researcher | Research results and recommendations |
-| `pre-analysis.md` | omk-metis | Pre-plan analysis and preparation |
-| `review.md` | omk-metis / omk-reviewer | Plan or code review notes |
-| `momus-review.md` | omk-momus | Plan validation results |
-| `oracle-advice.md` | omk-oracle | Strategic advisory consultations |
-| `decisions.md` | prometheus / sisyphus | Key decisions made during execution |
-| `progress.md` | sisyphus | Execution progress and blockers |
+| `exploration.md` | ghost-explorer | Codebase exploration findings |
+| `research.md` | ghost-researcher | Research results and recommendations |
+| `pre-analysis.md` | ghost-analyst | Pre-plan analysis and preparation |
+| `review.md` | ghost-analyst / ghost-reviewer | Plan or code review notes |
+| `validator-review.md` | ghost-validator | Plan validation results |
+| `oracle-advice.md` | ghost-oracle | Strategic advisory consultations |
+| `decisions.md` | phantom / wraith | Key decisions made during execution |
+| `progress.md` | wraith | Execution progress and blockers |
 
 ### Rules
 - Subagents **APPEND** to notepad files, never overwrite
-- Main agents (Prometheus/Sisyphus) create the notepad directory before spawning subagents
+- Main agents (Phantom/Wraith) create the notepad directory before spawning subagents
 - Notepad files use markdown format
 - Each entry should be labeled with the task context (e.g., `### Exploration: auth module`)
 - Notepad directories are cleaned up when plan status is COMPLETE
@@ -65,12 +65,12 @@ The notepad system provides cross-subagent memory for plan execution. Since suba
 .kiro/notepads/add-user-auth/
 ├── exploration.md    # Explorer's findings about current auth code
 ├── research.md       # Researcher's findings about auth approaches
-├── pre-analysis.md   # Metis's pre-plan analysis
-├── review.md         # Metis's review of the plan
-├── momus-review.md   # Momus's plan validation results
+├── pre-analysis.md   # Analyst's pre-plan analysis
+├── review.md         # Analyst's review of the plan
+├── validator-review.md   # Validator's plan validation results
 ├── oracle-advice.md  # Oracle's strategic advisory
-├── decisions.md      # Prometheus's key decisions
-└── progress.md       # Sisyphus's execution progress
+├── decisions.md      # Phantom's key decisions
+└── progress.md       # Wraith's execution progress
 ```
 
 ## Configuration Rules

@@ -46,7 +46,7 @@ Open an [issue](https://github.com/NachoFLizaur/oh-my-kiro/issues) for bug repor
 
 4. **Open your project in Kiro**
 
-   The agents are now available. Press `ctrl+p` for Prometheus (planner), `ctrl+a` for Atlas (plan executor), or `ctrl+e` for Sisyphus (direct executor).
+   The agents are now available. Press `ctrl+p` for Phantom (planner), `ctrl+a` for Revenant (plan executor), or `ctrl+e` for Wraith (direct executor).
 
 ---
 
@@ -109,7 +109,7 @@ Define positive and negative constraints clearly. Use MUST DO / MUST NOT DO sect
 
 ```markdown
 ### MUST DO
-- Always delegate codebase exploration to omk-explorer
+- Always delegate codebase exploration to ghost-explorer
 - Always verify subagent work independently
 - Always write findings to the notepad directory
 
@@ -259,7 +259,7 @@ There is no automated test suite. "Testing" means running Kiro CLI with the agen
 
 ### How to test
 
-1. **Start Kiro CLI** and invoke the agent you modified (e.g., `ctrl+p` for Prometheus)
+1. **Start Kiro CLI** and invoke the agent you modified (e.g., `ctrl+p` for Phantom)
 2. **Try the normal workflow** — does the agent behave as expected for typical requests?
 3. **Try edge cases** — ambiguous requests, requests that should be refused, requests that require delegation
 4. **Verify delegation** — when the agent delegates to a subagent, does it use the correct format? Does it pick the right subagent?
@@ -289,9 +289,9 @@ There is no automated test suite. "Testing" means running Kiro CLI with the agen
 
 ### PR title conventions
 
-- `fix(prometheus): prevent code generation during planning phase`
+- `fix(phantom): prevent code generation during planning phase`
 - `feat(skills): add database-migrations skill`
-- `improve(atlas): clarify delegation format for reviewer subagent`
+- `improve(revenant): clarify delegation format for reviewer subagent`
 - `docs(steering): update architecture.md with new subagent`
 
 ### What makes a good PR
