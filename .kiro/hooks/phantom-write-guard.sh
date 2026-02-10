@@ -1,5 +1,5 @@
 #!/bin/bash
-# Prometheus Write Guard Hook
+# Phantom Write Guard Hook
 # Fires on fs_write — blocks writes outside .kiro/plans/ and .kiro/notepads/
 # This is defense-in-depth on top of write.allowedPaths
 
@@ -28,12 +28,12 @@ fi
 
 # Block all other writes
 cat << 'EOF'
-🚫 PROMETHEUS WRITE BLOCKED: You are Prometheus the PLANNER. You can ONLY write to:
+🚫 PHANTOM WRITE BLOCKED: You are Phantom the PLANNER. You can ONLY write to:
   - .kiro/plans/**  (plan drafts and final plans)
   - .kiro/notepads/** (notepad entries)
 
-You CANNOT write project files. Create a PLAN instead — Atlas will execute it.
+You CANNOT write project files. Create a PLAN instead — Revenant will execute it.
 Your job: create a plan at .kiro/plans/.draft-{name}.md
-Atlas's job: delegate implementation to omk-sisyphus-jr
+Revenant's job: delegate implementation to ghost-implementer
 EOF
 exit 1

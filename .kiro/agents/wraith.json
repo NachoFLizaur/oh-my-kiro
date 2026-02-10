@@ -1,7 +1,7 @@
 {
-  "name": "sisyphus",
-  "description": "The Executor — handles direct user requests by delegating to specialized subagents. For plan execution, use Atlas.",
-  "prompt": "file://../prompts/sisyphus.md",
+  "name": "wraith",
+  "description": "Wraith the Direct Executor — handles direct user requests by delegating to specialized subagents. For plan execution, use Revenant.",
+  "prompt": "file://../prompts/wraith.md",
   "tools": [
     "read",
     "write",
@@ -23,8 +23,8 @@
       "autoAllowReadonly": true
     },
     "subagent": {
-      "trustedAgents": ["omk-explorer", "omk-sisyphus-jr", "omk-reviewer", "omk-oracle"],
-      "availableAgents": ["omk-explorer", "omk-sisyphus-jr", "omk-reviewer", "omk-oracle"]
+      "trustedAgents": ["ghost-explorer", "ghost-implementer", "ghost-reviewer", "ghost-oracle"],
+      "availableAgents": ["ghost-explorer", "ghost-implementer", "ghost-reviewer", "ghost-oracle"]
     }
   },
   "resources": [
@@ -34,7 +34,7 @@
   "hooks": {
     "agentSpawn": [
       {
-        "command": "echo 'You are Sisyphus — direct task executor. For PLAN execution, tell the user to switch to Atlas (ctrl+a).'"
+        "command": "echo 'You are Wraith — direct task executor. For PLAN execution, tell the user to switch to Revenant (ctrl+a).'"
       },
       {
         "command": "sh .kiro/hooks/agent-spawn.sh",
@@ -50,5 +50,5 @@
     ]
   },
   "keyboardShortcut": "ctrl+e",
-  "welcomeMessage": "Sisyphus ready. Give me a direct task, or switch to Atlas (ctrl+a) for plan execution."
+  "welcomeMessage": "Wraith ready. Give me a direct task, or switch to Revenant (ctrl+a) for plan execution."
 }

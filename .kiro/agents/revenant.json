@@ -1,0 +1,63 @@
+{
+  "name": "revenant",
+  "description": "Revenant the Plan Executor — reads plans from disk, delegates every task to subagents, verifies everything. Never writes code.",
+  "prompt": "file://../prompts/revenant.md",
+  "tools": [
+    "read",
+    "write",
+    "shell",
+    "glob",
+    "grep",
+    "use_subagent"
+  ],
+  "allowedTools": [
+    "read",
+    "glob",
+    "grep",
+    "use_subagent"
+  ],
+  "toolsSettings": {
+    "write": {
+      "allowedPaths": [
+        ".kiro/plans/**",
+        ".kiro/notepads/**"
+      ]
+    },
+    "shell": {
+      "autoAllowReadonly": true
+    },
+    "subagent": {
+      "trustedAgents": ["ghost-explorer", "ghost-implementer", "ghost-reviewer", "ghost-oracle"],
+      "availableAgents": ["ghost-explorer", "ghost-implementer", "ghost-reviewer", "ghost-oracle"]
+    }
+  },
+  "resources": [
+    "file://.kiro/steering/omk/**/*.md",
+    "skill://.kiro/skills/**/SKILL.md"
+  ],
+  "hooks": {
+    "agentSpawn": [
+      {
+        "command": "echo '⚡ IDENTITY: You are REVENANT — the PLAN EXECUTOR. You are NOT Phantom. NOT Wraith. You are REVENANT.' ; echo 'Your job: read plans, delegate tasks to subagents, verify results.' ; echo '' ; echo 'Plans in .kiro/plans/:' ; ls -1t .kiro/plans/*.md 2>/dev/null ; echo '(most recent listed first)'"
+      },
+      {
+        "command": "sh .kiro/hooks/agent-spawn.sh",
+        "timeout_ms": 10000
+      }
+    ],
+    "userPromptSubmit": [
+      {
+        "command": "echo '⚡ You are REVENANT. NOT Phantom. NOT Wraith. You execute plans by DELEGATING to ghost-implementer. You NEVER write code. You NEVER create plans. List plans from .kiro/plans/ and delegate tasks.'"
+      }
+    ],
+    "preToolUse": [
+      {
+        "matcher": "shell",
+        "command": "sh .kiro/hooks/pre-tool-use.sh",
+        "timeout_ms": 5000
+      }
+    ]
+  },
+  "keyboardShortcut": "ctrl+a",
+  "welcomeMessage": "Revenant ready. I execute plans by delegating to specialists. Which plan should I run? - If you've finished creating a plan with Phantom, I recommend you run /clear to free up context before we begin!"
+}

@@ -1,7 +1,7 @@
 {
-  "name": "prometheus",
-  "description": "The Planner — interviews users, delegates research to subagents, and generates structured execution plans",
-  "prompt": "file://../prompts/prometheus.md",
+  "name": "phantom",
+  "description": "Phantom the Planner — interviews users, delegates research to subagents, and generates structured execution plans",
+  "prompt": "file://../prompts/phantom.md",
   "tools": [
     "read",
     "write",
@@ -24,8 +24,8 @@
       "autoAllowReadonly": true
     },
     "subagent": {
-      "trustedAgents": ["omk-explorer", "omk-researcher", "omk-metis", "omk-momus"],
-      "availableAgents": ["omk-explorer", "omk-researcher", "omk-metis", "omk-momus"]
+      "trustedAgents": ["ghost-explorer", "ghost-researcher", "ghost-analyst", "ghost-validator"],
+      "availableAgents": ["ghost-explorer", "ghost-researcher", "ghost-analyst", "ghost-validator"]
     }
   },
   "resources": [
@@ -35,7 +35,7 @@
   "hooks": {
     "agentSpawn": [
       {
-        "command": "echo 'You are Prometheus the PLANNER. You create PLANS, never implement. Delegate all exploration to omk-explorer.'"
+        "command": "echo 'You are Phantom the PLANNER. You create PLANS, never implement. Delegate all exploration to ghost-explorer.'"
       },
       {
         "command": "sh .kiro/hooks/agent-spawn.sh",
@@ -45,11 +45,11 @@
     "preToolUse": [
       {
         "matcher": "fs_read",
-        "command": "bash .kiro/hooks/prometheus-read-guard.sh"
+        "command": "bash .kiro/hooks/phantom-read-guard.sh"
       },
       {
         "matcher": "fs_write",
-        "command": "bash .kiro/hooks/prometheus-write-guard.sh"
+        "command": "bash .kiro/hooks/phantom-write-guard.sh"
       },
       {
         "matcher": "shell",
@@ -64,5 +64,5 @@
     ]
   },
   "keyboardShortcut": "ctrl+p",
-  "welcomeMessage": "Prometheus ready. What would you like to plan?"
+  "welcomeMessage": "Phantom ready. What would you like to plan?"
 }

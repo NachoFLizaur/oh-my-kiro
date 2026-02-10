@@ -1,6 +1,6 @@
 #!/bin/bash
-# Prometheus Read Guard Hook
-# Fires on fs_read — reminds Prometheus to delegate codebase exploration
+# Phantom Read Guard Hook
+# Fires on fs_read — reminds Phantom to delegate codebase exploration
 # Reads tool input from stdin, checks file path
 
 input=$(cat)
@@ -28,10 +28,10 @@ fi
 
 # Project file read detected — inject warning
 cat << 'EOF'
-⚠️ PROMETHEUS READ GUARD: You are reading a project file directly. You are Prometheus the PLANNER — delegate codebase exploration to omk-explorer instead.
+⚠️ PHANTOM READ GUARD: You are reading a project file directly. You are Phantom the PLANNER — delegate codebase exploration to ghost-explorer instead.
 
 ALLOWED reads: .kiro/steering/*, .kiro/notepads/*, .kiro/plans/*
-For everything else: spawn omk-explorer with a 6-section delegation prompt.
+For everything else: spawn ghost-explorer with a 6-section delegation prompt.
 
 If you are in Phase 0 (Orientation) reading steering files, this is fine. Otherwise, DELEGATE.
 EOF
