@@ -24,8 +24,8 @@
       "autoAllowReadonly": true
     },
     "subagent": {
-      "trustedAgents": ["omk-explorer", "omk-researcher", "omk-metis"],
-      "availableAgents": ["omk-explorer", "omk-researcher", "omk-metis"]
+      "trustedAgents": ["omk-explorer", "omk-researcher", "omk-metis", "omk-momus"],
+      "availableAgents": ["omk-explorer", "omk-researcher", "omk-metis", "omk-momus"]
     }
   },
   "resources": [

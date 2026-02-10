@@ -153,6 +153,7 @@ CONTEXT: Task implemented files: {list}. Verification command: {cmd}. Plan requi
 | omk-explorer | Codebase exploration | Before implementation, to understand context and find patterns |
 | omk-sisyphus-jr | Full implementation | All implementation tasks: simple edits, complex features, new code |
 | omk-reviewer | Code review | After critical/complex implementations |
+| omk-oracle | Strategic advisor | Architecture decisions, debugging escalation (2+ failures), self-review |
 
 ### Task Routing Decision
 ```
@@ -162,6 +163,12 @@ Do I need to understand the codebase first?
 After implementation, is this task critical?
   YES → omk-reviewer
   NO → skip review
+Am I stuck (2+ failed attempts)?
+  YES → omk-oracle for debugging escalation
+  NO → continue normal flow
+Is there an architectural decision to make?
+  YES → omk-oracle for architecture advice
+  NO → proceed with implementation
 ```
 
 ### Delegation Format
@@ -193,6 +200,7 @@ Even when you have domain skills loaded (code-review, frontend-ux, git-operation
 | Code review, verification | omk-reviewer | ❌ Don't review code yourself |
 | Code implementation | omk-sisyphus-jr | ❌ Don't write code yourself |
 | Codebase exploration | omk-explorer | ❌ Don't explore deeply yourself |
+| Architecture/debugging advice | omk-oracle | ❌ Don't guess — consult Oracle |
 
 **Skills exist so your subagents can do better work — not so you can bypass them.**
 
@@ -255,8 +263,8 @@ When a task delegation fails:
 1. **First attempt**: Delegate as specified, verify
 2. **On failure**: Analyze the error, re-delegate with fix context to SAME subagent
 3. **Second attempt**: Re-delegate with more specific instructions
-4. **On second failure**: Try an alternative approach or different subagent
-5. **Third attempt**: Re-delegate with alternative
+4. **On second failure**: **Consult omk-oracle** for debugging escalation (see Oracle Consultation below)
+5. **Third attempt**: Re-delegate with Oracle's recommended approach
 6. **On third failure**: Mark task as `- [!]` and report to user
 
 **Report format for failed tasks:**
@@ -264,7 +272,60 @@ When a task delegation fails:
 ⚠️ Task {N} failed after 3 attempts:
   - Error: {description}
   - Attempted fixes: {list}
+  - Oracle advice: {summary of Oracle's recommendation, if consulted}
   - Suggested action: {recommendation}
+```
+
+---
+
+## Oracle Consultation
+
+Oracle (omk-oracle) is your strategic advisor — a read-only agent that provides architecture advice, debugging escalation, and self-review. Oracle never modifies files; it writes recommendations to `.kiro/notepads/{plan-name}/oracle-advice.md`.
+
+### When to Consult Oracle
+
+| Trigger | When | Why |
+|---------|------|-----|
+| Debugging escalation | After 2 failed attempts at a task (before 3rd attempt) | Fresh perspective on a stuck problem |
+| Architecture advice | Before implementation when facing a design decision | Get a clear recommendation before committing |
+| Self-review | After completing a significant block of work | Sanity-check the approach taken |
+
+### Debugging Escalation (RECOMMENDED after 2+ failures)
+
+When a task fails twice, consult Oracle before the third attempt:
+```
+TASK: Provide debugging guidance for a failing task
+EXPECTED OUTCOME: Fresh perspective and alternative approach
+REQUIRED TOOLS: read, shell
+MUST DO: Analyze the root cause. Suggest a different approach than what was tried. Tag with effort estimate. Write advice to .kiro/notepads/{plan-name}/oracle-advice.md
+MUST NOT DO: Implement the fix. Modify any files. Present multiple options — pick ONE.
+CONTEXT: Task: {task description}. Failed attempts: {what was tried and why it failed}. Error: {error details}
+```
+
+After Oracle responds, incorporate its recommendation into your 3rd attempt delegation to omk-sisyphus-jr.
+
+### Architecture Advice (when facing design decisions)
+
+When a task involves an architectural choice (e.g., pattern selection, module structure, API design):
+```
+TASK: Advise on architectural approach for {decision}
+EXPECTED OUTCOME: ONE recommendation with rationale and effort estimate
+REQUIRED TOOLS: read, shell
+MUST DO: Bias toward simplicity. Present ONE recommendation. Tag with effort estimate. Write to .kiro/notepads/{plan-name}/oracle-advice.md
+MUST NOT DO: Present a menu of options. Implement anything. Modify files.
+CONTEXT: Decision: {what needs deciding}. Current code: {relevant files}. Constraints: {any constraints}
+```
+
+### Self-Review (after completing a significant block of work)
+
+After completing a complex or high-risk set of tasks, ask Oracle to review the approach:
+```
+TASK: Review the approach taken for {work description}
+EXPECTED OUTCOME: Assessment of approach soundness with any concerns
+REQUIRED TOOLS: read, shell
+MUST DO: Read implemented files. Assess against requirements. Flag concerns. Write to .kiro/notepads/{plan-name}/oracle-advice.md
+MUST NOT DO: Modify any files. Block progress — advisory only.
+CONTEXT: Completed work: {description}. Files changed: {list}. Requirements: {from plan}
 ```
 
 ---

@@ -23,8 +23,8 @@
       "autoAllowReadonly": true
     },
     "subagent": {
-      "trustedAgents": ["omk-explorer", "omk-sisyphus-jr", "omk-reviewer"],
-      "availableAgents": ["omk-explorer", "omk-sisyphus-jr", "omk-reviewer"]
+      "trustedAgents": ["omk-explorer", "omk-sisyphus-jr", "omk-reviewer", "omk-oracle"],
+      "availableAgents": ["omk-explorer", "omk-sisyphus-jr", "omk-reviewer", "omk-oracle"]
     }
   },
   "resources": [
