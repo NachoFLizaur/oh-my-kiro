@@ -36,7 +36,7 @@ Structured planning. Delegated execution. Defense-in-depth guardrails.
 
 ## What is Oh-My-Kiro?
 
-Oh-My-Kiro is an open-source multi-agent orchestration system for [Kiro](https://kiro.dev). It provides a structured, multi-agent workflow that separates **planning** from **execution**, with specialized subagents for different tasks.
+Oh-My-Kiro is an open-source multi-agent orchestration system for [Kiro](https://kiro.dev). It provides a structured, multi-agent workflow that separates **planning** from **execution**, with 7 specialized subagents for different tasks.
 
 **Key ideas:**
 
@@ -68,20 +68,25 @@ Oh-My-Kiro is an open-source multi-agent orchestration system for [Kiro](https:/
 │   │  .kiro/plans/{name}.md  │                │                  │
 │   └─────────────────────────┘                │                  │
 │                                              │                  │
-│  ┌───────────────────────────────────────────┘                  │
-│  │  Delegates to subagents                                      │
-│  │                                                              │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
-│  ├─▶│ omk-explorer │  │ omk-reviewer │  │omk-researcher│       │
-│  │  └──────────────┘  └──────────────┘  └──────────────┘       │
-│  │  ┌──────────────┐  ┌──────────────┐                         │
-│  └─▶│omk-sisyphus-jr│  │  omk-metis  │                         │
-│     │ (writes code) │  │(plan review)│                         │
-│     └──────────────┘  └──────────────┘                         │
+│  Planning subagents          Execution subagents                │
+│  ┌──────────────┐            ┌──────────────┐                   │
+│  │  omk-metis   │◀─ Prom.   │omk-sisyphus-jr│◀─ Atlas/Sis.    │
+│  │(pre-analysis)│            │ (writes code) │                  │
+│  └──────────────┘            └──────────────┘                   │
+│  ┌──────────────┐            ┌──────────────┐                   │
+│  │  omk-momus   │◀─ Prom.   │ omk-reviewer │◀─ Atlas/Sis.     │
+│  │(plan review) │ optional   └──────────────┘                   │
+│  └──────────────┘                                               │
+│  ┌──────────────┐            ┌──────────────┐                   │
+│  │ omk-explorer │◀─ all      │  omk-oracle  │◀─ Atlas/Sis.    │
+│  └──────────────┘            │  (advisory)  │                   │
+│  ┌──────────────┐            └──────────────┘                   │
+│  │omk-researcher│◀─ Prom.                                       │
+│  └──────────────┘                                               │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-**3 main agents** orchestrate work. **5 subagents** do the actual work. The plan file on disk is the sole handoff between planning and execution.
+**3 main agents** orchestrate work. **7 subagents** do the actual work. The plan file on disk is the sole handoff between planning and execution.
 
 ### Plan Lifecycle
 
@@ -102,6 +107,12 @@ DRAFT  →  READY  →  IN_PROGRESS  →  COMPLETE
 
 ```bash
 npx oh-my-kiro
+```
+
+**Already have Oh-My-Kiro?** Update to the latest version:
+
+```bash
+npx oh-my-kiro --update
 ```
 
 **2. Open your project in Kiro**
@@ -153,7 +164,31 @@ cd oh-my-kiro
 |------|-------------|
 | `--global` | Install to `~/.kiro/` instead of `./.kiro/` |
 | `--force` | Overwrite existing files without prompting |
+| `--update` | Smart update — installs new files, updates changed files, skips user-modified files |
+| `--dry-run` | Preview what `--update` would do without making changes |
+| `--uninstall` | Remove Oh-My-Kiro files (only ours — never the whole `.kiro/`) |
 | `--help` | Show usage information |
+
+### Updating
+
+When a new version is released, use `--update` for a safe, non-destructive upgrade:
+
+```bash
+npx oh-my-kiro@latest --update
+```
+
+The updater uses a manifest (`.kiro/.omk-manifest.json`) to track file hashes and make smart decisions:
+
+- **New files** from the update are installed automatically
+- **Changed files** you haven't modified are replaced (with `.bak` backup)
+- **Files you've customized** (e.g., edited steering files) are skipped — your changes are preserved
+- **Removed files** from upstream are deleted (with `.bak` backup)
+
+Preview changes before applying:
+
+```bash
+npx oh-my-kiro@latest --update --dry-run
+```
 
 ### Uninstall
 
@@ -179,11 +214,12 @@ Prometheus is the planner. It interviews you to understand requirements, delegat
 
 1. Press `ctrl+p` to start Prometheus
 2. Describe what you want to build
-3. Prometheus asks clarifying questions (interview process)
-4. It delegates exploration to `omk-explorer` and research to `omk-researcher`
-5. It drafts a plan and sends it to `omk-metis` for review
-6. The final plan is written to `.kiro/plans/{plan-name}.md`
-7. You review the plan and approve it
+3. Prometheus delegates to `omk-metis` for **mandatory pre-analysis** (identifies hidden intentions, ambiguities, and risks)
+4. Prometheus asks clarifying questions informed by Metis's analysis
+5. It delegates exploration to `omk-explorer` and research to `omk-researcher`
+6. It drafts a plan and optionally sends it to `omk-momus` for a **High Accuracy Review** (you choose)
+7. The final plan is written to `.kiro/plans/{plan-name}.md`
+8. You review the plan and approve it
 
 **Example — Planning a feature:**
 
@@ -200,11 +236,12 @@ You:  JWT with refresh tokens. Protect all /api/* routes except
       /api/auth/login and /api/auth/register. No roles for now.
       We have a User model in src/models/user.ts.
 
-Prometheus:  Got it. Let me explore the codebase and draft a plan.
+Prometheus:  Got it. Let me analyze and explore the codebase.
+  [Delegates to omk-metis for pre-analysis of the request]
   [Delegates to omk-explorer to map the existing routes and models]
   [Delegates to omk-researcher to check best practices for JWT refresh]
   [Writes .kiro/plans/add-jwt-auth.md]
-  [Sends plan to omk-metis for review]
+  [Offers optional High Accuracy Review via omk-momus]
 
 Prometheus:  Plan is ready at .kiro/plans/add-jwt-auth.md — 6 tasks,
              estimated ~2 hours. Please review and let me know if
@@ -217,7 +254,7 @@ Prometheus:  Plan is ready at .kiro/plans/add-jwt-auth.md — 6 tasks,
 
 **Shortcut:** `ctrl+a`
 
-Atlas reads existing plan files and executes them task by task. It delegates all implementation to subagents and independently verifies their work.
+Atlas reads existing plan files and executes them task by task. It delegates all implementation to subagents and independently verifies their work. When stuck or facing architectural decisions, it can consult `omk-oracle` for strategic advice.
 
 **Workflow:**
 
@@ -321,7 +358,9 @@ Agent JSON configs live in `.kiro/agents/`. Each config defines:
 ├── atlas.json            # ctrl+a — The Plan Executor
 ├── sisyphus.json         # ctrl+e — The Direct Executor
 ├── omk-explorer.json     # Codebase exploration
-├── omk-metis.json        # Plan review
+├── omk-metis.json        # Pre-plan analysis
+├── omk-momus.json        # Post-plan validation
+├── omk-oracle.json       # Strategic advisory
 ├── omk-researcher.json   # Technical research
 ├── omk-reviewer.json     # Code review
 └── omk-sisyphus-jr.json  # Task implementation
@@ -543,7 +582,9 @@ Subagents are specialized agents that main agents delegate to. Users never invok
 | Subagent | Role | Delegated by |
 |----------|------|-------------|
 | **omk-explorer** | Codebase exploration and analysis — reads files, traces dependencies, maps architecture | Prometheus, Atlas, Sisyphus |
-| **omk-metis** | Plan review and approval — validates plan quality, completeness, and feasibility | Prometheus |
+| **omk-metis** | Pre-plan analysis — analyzes user requests before plan generation, identifies hidden intentions, ambiguities, and risks | Prometheus |
+| **omk-momus** | Post-plan validation — reviews completed plans for blocking issues, defaults to APPROVE (max 3 blockers) | Prometheus (optional) |
+| **omk-oracle** | Strategic advisory — architecture advice, debugging escalation after repeated failures, self-review of completed work | Atlas, Sisyphus |
 | **omk-researcher** | Technical research and documentation lookup — investigates libraries, APIs, best practices | Prometheus |
 | **omk-reviewer** | Code review and quality checks — reviews implementation for correctness, style, security | Atlas, Sisyphus |
 | **omk-sisyphus-jr** | Task implementation — the subagent that actually writes code, creates files, runs commands | Atlas, Sisyphus |
@@ -573,7 +614,9 @@ Agent prompts live in `.kiro/prompts/` as markdown files. Edit them to change ag
 ├── atlas.md              # Plan executor behavior
 ├── sisyphus.md           # Direct executor behavior
 ├── omk-explorer.md       # Explorer behavior
-├── omk-metis.md          # Plan reviewer behavior
+├── omk-metis.md          # Pre-plan analyst behavior
+├── omk-momus.md          # Post-plan validator behavior
+├── omk-oracle.md         # Strategic advisor behavior
 ├── omk-researcher.md     # Researcher behavior
 ├── omk-reviewer.md       # Code reviewer behavior
 └── omk-sisyphus-jr.md    # Implementer behavior

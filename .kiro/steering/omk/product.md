@@ -1,13 +1,14 @@
 # Oh-My-Kiro — Product Overview
 
 ## What Is Oh-My-Kiro?
-Oh-My-Kiro is an open-source multi-agent orchestration system for Kiro CLI. It provides two specialized agents that work together through structured plan files:
+Oh-My-Kiro is an open-source multi-agent orchestration system for Kiro CLI. It provides three main agents and seven specialized subagents that work together through structured plan files:
 
-- **Prometheus** (The Planner): Researches codebases, interviews users to understand requirements, and generates detailed execution plans
-- **Sisyphus** (The Executor): Reads plans from disk and autonomously executes them by delegating to specialized subagents
+- **Prometheus** (The Planner): Researches codebases, interviews users, and generates detailed execution plans with mandatory pre-analysis and optional high-accuracy validation
+- **Atlas** (The Plan Executor): Reads plans from disk and autonomously executes them by delegating to specialized subagents, with strategic advisory support
+- **Sisyphus** (The Direct Executor): Handles immediate user requests by delegating to specialized subagents
 
 ## Core Principle
-The **plan file on disk** (`.kiro/plans/{name}.md`) is the sole handoff artifact between Prometheus and Sisyphus. They never share context directly. This enables:
+The **plan file on disk** (`.kiro/plans/{name}.md`) is the sole handoff artifact between Prometheus and Atlas. They never share context directly. This enables:
 - Separate sessions for planning and execution
 - Human review of plans before execution
 - Plan reuse and version control
@@ -16,10 +17,19 @@ The **plan file on disk** (`.kiro/plans/{name}.md`) is the sole handoff artifact
 ## Architecture
 ```
 User → Prometheus (planning session)
+         ├── omk-metis (pre-analysis)
+         ├── omk-explorer + omk-researcher
+         └── omk-momus (optional validation)
          ↓ writes plan to disk
     .kiro/plans/{name}.md
          ↓ reads plan from disk
-User → Sisyphus (execution session)
+User → Atlas (plan execution session)
+         ├── omk-sisyphus-jr (implementation)
+         ├── omk-reviewer (code review)
+         └── omk-oracle (strategic advice)
+
+User → Sisyphus (direct task session)
+         └── Any subagent as needed + omk-oracle
 ```
 
 ## Target Users

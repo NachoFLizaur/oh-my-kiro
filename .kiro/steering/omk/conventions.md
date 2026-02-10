@@ -12,7 +12,7 @@
 
 ## Agent Naming
 - Main agents: lowercase (`prometheus`, `sisyphus`, `atlas`)
-- Subagents: `omk-` prefix (`omk-explorer`, `omk-metis`, `omk-sisyphus-jr`)
+- Subagents: `omk-` prefix (`omk-explorer`, `omk-metis`, `omk-momus`, `omk-oracle`, `omk-sisyphus-jr`)
 - The `omk-` prefix prevents collision with user's own agents
 
 ## Directory Structure
@@ -46,7 +46,10 @@ The notepad system provides cross-subagent memory for plan execution. Since suba
 |------|-----------|---------|
 | `exploration.md` | omk-explorer | Codebase exploration findings |
 | `research.md` | omk-researcher | Research results and recommendations |
+| `pre-analysis.md` | omk-metis | Pre-plan analysis and preparation |
 | `review.md` | omk-metis / omk-reviewer | Plan or code review notes |
+| `momus-review.md` | omk-momus | Plan validation results |
+| `oracle-advice.md` | omk-oracle | Strategic advisory consultations |
 | `decisions.md` | prometheus / sisyphus | Key decisions made during execution |
 | `progress.md` | sisyphus | Execution progress and blockers |
 
@@ -62,7 +65,10 @@ The notepad system provides cross-subagent memory for plan execution. Since suba
 .kiro/notepads/add-user-auth/
 ├── exploration.md    # Explorer's findings about current auth code
 ├── research.md       # Researcher's findings about auth approaches
+├── pre-analysis.md   # Metis's pre-plan analysis
 ├── review.md         # Metis's review of the plan
+├── momus-review.md   # Momus's plan validation results
+├── oracle-advice.md  # Oracle's strategic advisory
 ├── decisions.md      # Prometheus's key decisions
 └── progress.md       # Sisyphus's execution progress
 ```
@@ -72,3 +78,9 @@ The notepad system provides cross-subagent memory for plan execution. Since suba
 - **ALWAYS** use `file://../prompts/{name}.md` for prompt references (relative to agent config dir)
 - **ALWAYS** use `file://.kiro/steering/omk/**/*.md` for resources (relative to project root)
 - **ALWAYS** use `trustedAgents` for subagent autonomy
+
+## Manifest File
+- Location: `.kiro/.omk-manifest.json`
+- Generated automatically on install/update
+- Tracks installed file versions and hashes
+- Should be added to `.gitignore`

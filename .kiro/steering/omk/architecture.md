@@ -1,7 +1,7 @@
 # Oh-My-Kiro — Architecture
 
 ## Overview
-Oh-My-Kiro is a multi-agent orchestration system built on three main agents and five specialized subagents. The architecture separates planning from execution through disk-based plan files, enabling human oversight and structured workflows.
+Oh-My-Kiro is a multi-agent orchestration system built on three main agents and seven specialized subagents. The architecture separates planning from execution through disk-based plan files, enabling human oversight and structured workflows.
 
 The system operates through three distinct interaction patterns:
 - **Planning sessions** (Prometheus): Research and plan generation
@@ -19,10 +19,11 @@ The system operates through three distinct interaction patterns:
 - Multi-step workflows that benefit from upfront analysis
 
 **Key capabilities**:
+- Pre-plan analysis via omk-metis (mandatory before every plan)
 - User requirement gathering through interactive interviews
 - Codebase exploration via omk-explorer delegation
 - Research delegation to omk-researcher for technical decisions
-- Plan review and refinement via omk-metis
+- Optional high-accuracy plan validation via omk-momus
 - Generates structured plan files at `.kiro/plans/{name}.md`
 
 **Keyboard shortcut**: `Ctrl+P`
@@ -39,6 +40,7 @@ The system operates through three distinct interaction patterns:
 - Reads and parses plan files from `.kiro/plans/`
 - Delegates implementation tasks to omk-sisyphus-jr
 - Coordinates code reviews via omk-reviewer
+- Strategic consultation via omk-oracle for architecture advice and debugging escalation
 - Verifies completion and updates plan status
 - **Never writes code directly** (restricted to `.kiro/` paths only)
 
@@ -56,6 +58,7 @@ The system operates through three distinct interaction patterns:
 **Key capabilities**:
 - Full filesystem access for direct code changes
 - Can delegate to any execution subagent as needed
+- Strategic consultation via omk-oracle for debugging escalation and self-review
 - Handles both simple and complex requests immediately
 - No plan file requirements
 
@@ -71,10 +74,19 @@ The system operates through three distinct interaction patterns:
 - **Write restriction**: `.kiro/notepads/**` only
 
 ### omk-metis
-**Specialization**: Plan review and validation
-- Reviews generated plans for completeness
-- Identifies potential issues or gaps
-- Suggests improvements and refinements
+**Specialization**: Pre-plan analysis and request assessment
+- Analyzes user requests BEFORE plan generation
+- Identifies hidden intentions, ambiguities, and risks
+- Provides directives for plan generation
+- Suggests acceptance criteria
+- **Write restriction**: `.kiro/notepads/**` only
+
+### omk-momus
+**Specialization**: Post-plan validation
+- Reviews completed plans for blocking issues
+- Defaults to APPROVE — only rejects for true blockers
+- Limited to max 3 blocking issues per review
+- Checks: file references, task feasibility, internal consistency
 - **Write restriction**: `.kiro/notepads/**` only
 
 ### omk-researcher
@@ -98,14 +110,24 @@ The system operates through three distinct interaction patterns:
 - Handles complex multi-file changes
 - **Write access**: Full filesystem access
 
+### omk-oracle
+**Specialization**: Strategic advisory (read-only)
+- Provides architecture advice with pragmatic minimalism
+- Debugging escalation after repeated failures
+- Self-review of completed work
+- Presents ONE recommendation with effort estimate
+- **Write restriction**: `.kiro/notepads/**` only
+- **No delegation**: Cannot spawn other subagents
+
 ## Delegation Flows
 
 ### Planning Flow (Prometheus)
 ```
 User Request → Prometheus
+    ├── omk-metis (pre-plan analysis) ← MANDATORY
     ├── omk-explorer (codebase analysis)
     ├── omk-researcher (technical research)
-    └── omk-metis (plan review)
+    └── omk-momus (plan validation) ← OPTIONAL
          ↓
     Plan File (.kiro/plans/{name}.md)
 ```
@@ -115,7 +137,8 @@ User Request → Prometheus
 Plan File → Atlas
     ├── omk-explorer (task-specific exploration)
     ├── omk-sisyphus-jr (implementation)
-    └── omk-reviewer (code review)
+    ├── omk-reviewer (code review)
+    └── omk-oracle (strategic advice) ← NEW
          ↓
     Completed Implementation
 ```
@@ -123,7 +146,8 @@ Plan File → Atlas
 ### Direct Task Flow (Sisyphus)
 ```
 User Request → Sisyphus
-    └── Any execution subagent as needed
+    ├── Any execution subagent as needed
+    └── omk-oracle (strategic advice) ← NEW
          ↓
     Immediate Implementation
 ```
@@ -155,7 +179,7 @@ Filesystem access is carefully controlled to maintain system integrity:
 - Cannot modify user code directly
 - Ensures separation between planning and execution
 
-**Research Subagents (explorer, metis, researcher, reviewer)**:
+**Research/Advisory Subagents (explorer, metis, momus, researcher, reviewer, oracle)**:
 - Restricted to `.kiro/notepads/**` only
 - Read-only access to user code
 - Prevents accidental modifications during analysis
@@ -165,10 +189,30 @@ Filesystem access is carefully controlled to maintain system integrity:
 - Can create, modify, and delete any files
 - Trusted with actual implementation
 
+### Oracle Consultation Pattern
+Strategic advisory system available to Atlas and Sisyphus (not Prometheus) for three use cases:
+
+**Architecture Advice**: When facing design decisions during execution, consult Oracle for a single, effort-tagged recommendation biased toward simplicity.
+
+**Debugging Escalation**: After 2+ failed attempts at a task, consult Oracle for a fresh perspective and alternative approach before the final attempt.
+
+**Self-Review**: After completing significant work, consult Oracle for an advisory assessment of the approach taken.
+
+**Key constraints**:
+- Oracle is read-only (notepads only)
+- Oracle cannot delegate to other subagents
+- Oracle presents ONE recommendation, not menus
+- Oracle tags all recommendations with effort estimates (S/M/L)
+
 ### Trusted Agents
 Subagents are configured as `trustedAgents` in main agent configs, enabling:
 - Autonomous operation without user confirmation
 - Streamlined delegation workflows
 - Reduced interaction overhead during execution
+
+**Trusted agent assignments**:
+- Prometheus: 4 trusted (explorer, researcher, metis, momus)
+- Atlas: 4 trusted (explorer, sisyphus-jr, reviewer, oracle)
+- Sisyphus: 4 trusted (explorer, sisyphus-jr, reviewer, oracle)
 
 This trust model allows main agents to delegate complex tasks while maintaining control over the overall workflow.
