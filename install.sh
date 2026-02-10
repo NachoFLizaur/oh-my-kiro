@@ -113,10 +113,10 @@ fi
 # ---------------------------------------------------------------------------
 # File manifest — everything we install (shared by install and uninstall)
 # ---------------------------------------------------------------------------
-AGENT_FILES="prometheus.json atlas.json sisyphus.json omk-explorer.json omk-metis.json omk-researcher.json omk-reviewer.json omk-sisyphus-jr.json omk-momus.json omk-oracle.json"
-PROMPT_FILES="prometheus.md atlas.md sisyphus.md omk-explorer.md omk-metis.md omk-researcher.md omk-reviewer.md omk-sisyphus-jr.md omk-momus.md omk-oracle.md"
+AGENT_FILES="phantom.json revenant.json wraith.json ghost-explorer.json ghost-analyst.json ghost-validator.json ghost-researcher.json ghost-reviewer.json ghost-implementer.json ghost-oracle.json"
+PROMPT_FILES="phantom.md revenant.md wraith.md ghost-explorer.md ghost-analyst.md ghost-validator.md ghost-researcher.md ghost-reviewer.md ghost-implementer.md ghost-oracle.md"
 STEERING_FILES="product.md conventions.md plan-format.md architecture.md"
-HOOK_FILES="agent-spawn.sh pre-tool-use.sh prometheus-read-guard.sh prometheus-write-guard.sh"
+HOOK_FILES="agent-spawn.sh pre-tool-use.sh phantom-read-guard.sh phantom-write-guard.sh"
 SKILL_DIRS="git-operations code-review frontend-ux"
 
 # ---------------------------------------------------------------------------
@@ -657,8 +657,8 @@ ok "Source directory verified: ${SOURCE_DIR}"
 # 3. Check if target already has oh-my-kiro files
 if [ -d "$TARGET_DIR" ] && [ "$FORCE" = false ]; then
     # Look for a known oh-my-kiro marker file
-    if [ -f "${TARGET_DIR}/agents/prometheus.json" ] || \
-       [ -f "${TARGET_DIR}/prompts/prometheus.md" ]; then
+    if [ -f "${TARGET_DIR}/agents/phantom.json" ] || \
+       [ -f "${TARGET_DIR}/prompts/phantom.md" ]; then
         warn "Existing Oh-My-Kiro files detected in ${TARGET_DIR}"
         printf "\n"
         printf "  Existing files will be backed up to *.bak before overwriting.\n"
@@ -785,8 +785,8 @@ errors=0
 
 # Check a representative file from each category
 for check_file in \
-    "agents/prometheus.json" \
-    "prompts/prometheus.md" \
+    "agents/phantom.json" \
+    "prompts/phantom.md" \
     "steering/omk/product.md" \
     "hooks/agent-spawn.sh" \
     "skills/git-operations/SKILL.md" \
@@ -831,6 +831,6 @@ if [ "$GLOBAL_INSTALL" = true ]; then
 else
     printf "  1. Open this project in Kiro — Oh-My-Kiro agents are ready to use.\n"
 fi
-printf "  2. Start a conversation with the ${BOLD}Prometheus${RESET} agent for planning.\n"
-printf "  3. Use ${BOLD}Sisyphus${RESET} for execution or ${BOLD}Atlas${RESET} for exploration.\n"
+printf "  2. Start a conversation with the ${BOLD}Phantom${RESET} agent for planning.\n"
+printf "  3. Use ${BOLD}Wraith${RESET} for execution or ${BOLD}Revenant${RESET} for exploration.\n"
 printf "\n  Docs: https://github.com/NachoFLizaur/oh-my-kiro\n\n"

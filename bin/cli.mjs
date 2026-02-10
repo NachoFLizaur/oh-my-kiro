@@ -108,29 +108,29 @@ const TARGET_DIR = globalInstall
 // Shared file lists (used by install, update, and uninstall)
 // ---------------------------------------------------------------------------
 const AGENT_FILES = [
-  'prometheus.json',
-  'atlas.json',
-  'sisyphus.json',
-  'omk-explorer.json',
-  'omk-metis.json',
-  'omk-researcher.json',
-  'omk-reviewer.json',
-  'omk-sisyphus-jr.json',
-  'omk-momus.json',
-  'omk-oracle.json',
+  'phantom.json',
+  'revenant.json',
+  'wraith.json',
+  'ghost-explorer.json',
+  'ghost-analyst.json',
+  'ghost-validator.json',
+  'ghost-researcher.json',
+  'ghost-reviewer.json',
+  'ghost-implementer.json',
+  'ghost-oracle.json',
 ];
 
 const PROMPT_FILES = [
-  'prometheus.md',
-  'atlas.md',
-  'sisyphus.md',
-  'omk-explorer.md',
-  'omk-metis.md',
-  'omk-researcher.md',
-  'omk-reviewer.md',
-  'omk-sisyphus-jr.md',
-  'omk-momus.md',
-  'omk-oracle.md',
+  'phantom.md',
+  'revenant.md',
+  'wraith.md',
+  'ghost-explorer.md',
+  'ghost-analyst.md',
+  'ghost-validator.md',
+  'ghost-researcher.md',
+  'ghost-reviewer.md',
+  'ghost-implementer.md',
+  'ghost-oracle.md',
 ];
 
 const STEERING_FILES = ['product.md', 'conventions.md', 'plan-format.md', 'architecture.md'];
@@ -138,8 +138,8 @@ const STEERING_FILES = ['product.md', 'conventions.md', 'plan-format.md', 'archi
 const HOOK_FILES = [
   'agent-spawn.sh',
   'pre-tool-use.sh',
-  'prometheus-read-guard.sh',
-  'prometheus-write-guard.sh',
+  'phantom-read-guard.sh',
+  'phantom-write-guard.sh',
 ];
 
 const SKILL_DIRS = ['git-operations', 'code-review', 'frontend-ux'];
@@ -708,10 +708,10 @@ ok(`Source directory verified: ${SOURCE_DIR}`);
 
 // 3. Check if target already has oh-my-kiro files
 if (fs.existsSync(TARGET_DIR) && !force) {
-  const hasPrometheusAgent = fs.existsSync(path.join(TARGET_DIR, 'agents', 'prometheus.json'));
-  const hasPrometheusPrompt = fs.existsSync(path.join(TARGET_DIR, 'prompts', 'prometheus.md'));
+  const hasPhantomAgent = fs.existsSync(path.join(TARGET_DIR, 'agents', 'phantom.json'));
+  const hasPhantomPrompt = fs.existsSync(path.join(TARGET_DIR, 'prompts', 'phantom.md'));
 
-  if (hasPrometheusAgent || hasPrometheusPrompt) {
+  if (hasPhantomAgent || hasPhantomPrompt) {
     warn(`Existing Oh-My-Kiro files detected in ${TARGET_DIR}`);
     process.stdout.write('\n');
     process.stdout.write('  Existing files will be backed up to *.bak before overwriting.\n');
@@ -842,8 +842,8 @@ info('Validating installation...');
 let errors = 0;
 
 const checkFiles = [
-  'agents/prometheus.json',
-  'prompts/prometheus.md',
+  'agents/phantom.json',
+  'prompts/phantom.md',
   path.join('steering', 'omk', 'product.md'),
   'hooks/agent-spawn.sh',
   path.join('skills', 'git-operations', 'SKILL.md'),
@@ -897,6 +897,6 @@ if (globalInstall) {
 } else {
   process.stdout.write('  1. Open this project in Kiro \u2014 Oh-My-Kiro agents are ready to use.\n');
 }
-process.stdout.write(`  2. Start a conversation with the ${BOLD}Prometheus${RESET} agent for planning.\n`);
-process.stdout.write(`  3. Use ${BOLD}Sisyphus${RESET} for execution or ${BOLD}Atlas${RESET} for exploration.\n`);
+process.stdout.write(`  2. Start a conversation with the ${BOLD}Phantom${RESET} agent for planning.\n`);
+process.stdout.write(`  3. Use ${BOLD}Wraith${RESET} for execution or ${BOLD}Revenant${RESET} for exploration.\n`);
 process.stdout.write('\n  Docs: https://github.com/NachoFLizaur/oh-my-kiro\n\n');
