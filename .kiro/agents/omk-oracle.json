@@ -1,7 +1,7 @@
 {
-  "name": "omk-metis",
-  "description": "pre-plan analysis subagent — analyzes user requests before plan generation, identifies hidden intentions, ambiguities, and risks",
-  "prompt": "file://../prompts/omk-metis.md",
+  "name": "omk-oracle",
+  "description": "Strategic advisor subagent — read-only architecture advice, debugging escalation, and self-review with pragmatic minimalism",
+  "prompt": "file://../prompts/omk-oracle.md",
   "tools": [
     "read",
     "write",
@@ -24,6 +24,6 @@
   },
   "resources": [
     "file://.kiro/steering/omk/conventions.md",
-    "file://.kiro/steering/omk/plan-format.md"
+    "file://.kiro/steering/omk/architecture.md"
   ]
 }

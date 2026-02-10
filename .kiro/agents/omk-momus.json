@@ -1,7 +1,7 @@
 {
-  "name": "omk-metis",
-  "description": "pre-plan analysis subagent — analyzes user requests before plan generation, identifies hidden intentions, ambiguities, and risks",
-  "prompt": "file://../prompts/omk-metis.md",
+  "name": "omk-momus",
+  "description": "Post-plan validator subagent — strict review with approval bias, only rejects for true blockers (max 3)",
+  "prompt": "file://../prompts/omk-momus.md",
   "tools": [
     "read",
     "write",
