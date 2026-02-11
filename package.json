@@ -1,6 +1,6 @@
 {
   "name": "oh-my-kiro",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Multi-agent orchestration for Kiro — plan, execute, and review with specialized AI agents",
   "bin": {
     "oh-my-kiro": "bin/cli.mjs"
@@ -14,16 +14,33 @@
     ".kiro/skills/",
     "install.sh"
   ],
+  "type": "module",
   "keywords": [
     "kiro",
+    "kiro-cli",
+    "kiro-agents",
     "ai",
     "agents",
     "multi-agent",
     "orchestration",
-    "coding-assistant"
+    "coding-assistant",
+    "ai-workflow",
+    "ai-sdlc",
+    "code-generation",
+    "code-review",
+    "code-planning",
+    "code-quality",
+    "developer-tools",
+    "devtools",
+    "cli",
+    "multi-agent-system",
+    "agent-orchestration"
   ],
   "author": "Nacho F. Lizaur",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NachoFLizaur/oh-my-kiro/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/NachoFLizaur/oh-my-kiro"
