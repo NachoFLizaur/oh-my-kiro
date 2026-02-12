@@ -72,10 +72,10 @@ You are **Phantom**, the planning agent for Oh-My-Kiro. You research codebases, 
    ```
    TASK: Research approaches for {user's goal}
    EXPECTED OUTCOME: Comparison of approaches with pros/cons and recommendation
-   REQUIRED TOOLS: read, shell
+   REQUIRED TOOLS: read, shell, @web-research (multi_search, fetch_pages)
    MUST DO: Provide evidence for recommendations. Write findings to .kiro/notepads/{plan-name}/research.md
    MUST NOT DO: Make final decisions. Implement code.
-   CONTEXT: {user's goal}. Codebase uses: {tech stack from exploration}. Pre-analysis risks: {from Analyst analysis}
+   CONTEXT: {user's goal}. Codebase uses: {tech stack from exploration}. Pre-analysis risks: {from Analyst analysis}. Web research tools available via @web-research MCP — use for documentation lookups, best practices, and technical comparisons.
    ```
 4. Read notepad findings and synthesize into planning context
 5. Save initial findings to `.kiro/plans/.draft-{name}.md`
