@@ -1,16 +1,19 @@
 {
   "name": "ghost-researcher",
-  "description": "Ghost Researcher - technical research specialist",
+  "description": "Ghost Researcher - technical research specialist with web research capabilities",
   "prompt": "file://../prompts/ghost-researcher.md",
+  "includeMcpJson": true,
   "tools": [
     "read",
     "write",
-    "shell"
+    "shell",
+    "@web-research"
   ],
   "allowedTools": [
     "read",
     "write",
-    "shell"
+    "shell",
+    "@web-research"
   ],
   "toolsSettings": {
     "shell": {
@@ -23,6 +26,7 @@
     }
   },
   "resources": [
-    "file://.kiro/steering/omk/conventions.md"
+    "file://.kiro/steering/omk/conventions.md",
+    "skill://.kiro/skills/**/SKILL.md"
   ]
 }

@@ -1,6 +1,6 @@
 {
   "name": "oh-my-kiro",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Multi-agent orchestration for Kiro — plan, execute, and review with specialized AI agents",
   "bin": {
     "oh-my-kiro": "bin/cli.mjs"
@@ -12,6 +12,7 @@
     ".kiro/steering/",
     ".kiro/hooks/",
     ".kiro/skills/",
+    ".kiro/settings/",
     "install.sh"
   ],
   "type": "module",
@@ -43,7 +44,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/NachoFLizaur/oh-my-kiro"
+    "url": "git+https://github.com/NachoFLizaur/oh-my-kiro.git"
   },
   "homepage": "https://github.com/NachoFLizaur/oh-my-kiro#readme",
   "engines": {

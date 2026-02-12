@@ -90,8 +90,12 @@ The system operates through three distinct interaction patterns:
 - **Write restriction**: `.kiro/notepads/**` only
 
 ### ghost-researcher
-**Specialization**: Technical research and recommendations
-- Researches best practices and approaches
+**Specialization**: Technical research and recommendations (with web research)
+- Researches best practices and approaches via web search and deep research
+- Uses `@web-research` MCP tools (multi_search, fetch_pages) for web access
+- Falls back to `curl` via `shell` when MCP tools are unavailable
+- Complexity router: quick search for simple questions, deep research for complex ones
+- Loads research methodology from skills (`web-search`, `deep-research`) on demand
 - Evaluates technical options and trade-offs
 - Provides implementation recommendations
 - **Write restriction**: `.kiro/notepads/**` only
@@ -126,7 +130,7 @@ The system operates through three distinct interaction patterns:
 User Request → Phantom
     ├── ghost-analyst (pre-plan analysis) ← MANDATORY
     ├── ghost-explorer (codebase analysis)
-    ├── ghost-researcher (technical research)
+    ├── ghost-researcher (technical research + web search via MCP)
     └── ghost-validator (plan validation) ← OPTIONAL
          ↓
     Plan File (.kiro/plans/{name}.md)
@@ -216,3 +220,15 @@ Subagents are configured as `trustedAgents` in main agent configs, enabling:
 - Wraith: 4 trusted (explorer, implementer, reviewer, oracle)
 
 This trust model allows main agents to delegate complex tasks while maintaining control over the overall workflow.
+
+### MCP Integration
+The system uses Model Context Protocol (MCP) servers for extended tool capabilities:
+
+**Workspace-level config** (`.kiro/settings/mcp.json`):
+- `web-research` — DuckDuckGo-based web search and page fetching via `web-research-mcp`
+
+**Tool access**:
+- ghost-researcher has `@web-research` tools (multi_search, fetch_pages) via `includeMcpJson: true`
+- Other agents can opt into MCP tools by setting `includeMcpJson: true` in their config
+
+**Graceful degradation**: If the MCP server is unavailable (first-time npx download, network issues), ghost-researcher falls back to `curl` via `shell` for web access.

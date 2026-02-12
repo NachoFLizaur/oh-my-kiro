@@ -142,7 +142,9 @@ const HOOK_FILES = [
   'phantom-write-guard.sh',
 ];
 
-const SKILL_DIRS = ['git-operations', 'code-review', 'frontend-ux'];
+const SKILL_DIRS = ['git-operations', 'code-review', 'frontend-ux', 'web-search', 'deep-research'];
+
+const SETTINGS_FILES = ['mcp.json'];
 
 // ---------------------------------------------------------------------------
 // Hashing helper
@@ -175,6 +177,9 @@ function getAllFileEntries() {
   }
   for (const skill of SKILL_DIRS) {
     entries.push({ relPath: `skills/${skill}/SKILL.md` });
+  }
+  for (const f of SETTINGS_FILES) {
+    entries.push({ relPath: `settings/${f}` });
   }
   return entries;
 }
@@ -506,6 +511,13 @@ if (uninstall) {
     }
   }
 
+  // --- Settings ---
+  info('Removing settings...');
+  for (const f of SETTINGS_FILES) {
+    removeFile(path.join(TARGET_DIR, 'settings', f));
+    removeFile(path.join(TARGET_DIR, 'settings', `${f}.bak`));
+  }
+
   // --- Runtime .gitkeep files ---
   info('Removing runtime files...');
   removeFile(path.join(TARGET_DIR, 'plans', '.gitkeep'));
@@ -522,6 +534,7 @@ if (uninstall) {
     path.join(TARGET_DIR, 'steering'),
     path.join(TARGET_DIR, 'hooks'),
     path.join(TARGET_DIR, 'skills'),
+    path.join(TARGET_DIR, 'settings'),
     path.join(TARGET_DIR, 'plans'),
     path.join(TARGET_DIR, 'notepads'),
   ];
@@ -812,6 +825,17 @@ for (const skill of SKILL_DIRS) {
       path.join(TARGET_DIR, 'skills', skill, 'SKILL.md'),
     )
   ) {
+    installed++;
+  } else {
+    skipped++;
+  }
+}
+
+// --- Settings ---
+info('Installing settings...');
+ensureDir(path.join(TARGET_DIR, 'settings'));
+for (const f of SETTINGS_FILES) {
+  if (copyFile(path.join(SOURCE_DIR, 'settings', f), path.join(TARGET_DIR, 'settings', f))) {
     installed++;
   } else {
     skipped++;

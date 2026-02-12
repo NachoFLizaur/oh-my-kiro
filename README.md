@@ -32,6 +32,7 @@ Structured planning. Delegated execution. Defense-in-depth guardrails.
   - [Agent Configs](#agent-configs)
   - [Steering Files](#steering-files)
   - [Skills](#skills)
+  - [MCP Servers](#mcp-servers)
   - [Hooks](#hooks)
 - [Customization](#customization)
 - [Troubleshooting](#troubleshooting)
@@ -50,6 +51,7 @@ Oh-My-Kiro is an open-source multi-agent orchestration system for [Kiro](https:/
 - **Main agents never write code.** They delegate everything to specialized subagents.
 - **Multiple layers of safety.** JSON config permissions, shell hooks for runtime enforcement, and identity reinforcement at every turn.
 - **Cross-agent memory.** A shared filesystem (`.kiro/notepads/`) lets subagents coordinate without sharing context windows.
+- **Web research on demand.** Ghost-researcher can search the web and fetch page content via MCP tools, with automatic complexity routing between quick lookups and deep research.
 - **Trust but verify.** The executor independently verifies every subagent's work — never trusts self-reports.
 
 ---
@@ -89,7 +91,7 @@ Oh-My-Kiro is an open-source multi-agent orchestration system for [Kiro](https:/
 │  └─────────────────┘            └─────────────────┘              │
 │  ┌─────────────────┐                                             │
 │  │ghost-researcher │◀─Phantom                                    │
-│  │   (research)    │                                             │
+│  │ (web research)  │                                             │
 │  └─────────────────┘                                             │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -114,7 +116,7 @@ Subagents are specialized agents that main agents delegate to. Users never invok
 | **ghost-analyst** | Pre-plan analysis (mandatory before planning) | Phantom |
 | **ghost-validator** | Post-plan validation (optional, defaults to APPROVE) | Phantom |
 | **ghost-oracle** | Strategic advisory and debugging escalation | Revenant, Wraith |
-| **ghost-researcher** | Technical research and best practices | Phantom |
+| **ghost-researcher** | Technical research with web search (MCP-powered) | Phantom |
 | **ghost-reviewer** | Code review and quality checks | Revenant, Wraith |
 | **ghost-implementer** | Task implementation (writes code) | Revenant, Wraith |
 
@@ -273,7 +275,7 @@ You:  JWT with refresh tokens. Protect all /api/* routes except
 Phantom:  Got it. Let me analyze and explore the codebase.
   [Delegates to ghost-analyst for pre-analysis of the request]
   [Delegates to ghost-explorer to map the existing routes and models]
-  [Delegates to ghost-researcher to check best practices for JWT refresh]
+  [Delegates to ghost-researcher to web-search current best practices for JWT refresh]
   [Writes .kiro/plans/add-jwt-auth.md]
   [Offers optional High Accuracy Review via ghost-validator]
 
@@ -422,8 +424,45 @@ Skills are on-demand knowledge files that agents load when relevant. They live i
 | Git Operations | `git-operations/SKILL.md` | Branching, commits, merge workflows |
 | Code Review | `code-review/SKILL.md` | Review checklists, security patterns |
 | Frontend UX | `frontend-ux/SKILL.md` | UI/UX, accessibility, responsive design |
+| Web Search | `web-search/SKILL.md` | Quick factual lookups, documentation finding |
+| Deep Research | `deep-research/SKILL.md` | Comprehensive multi-source research, comparisons |
 
 Skills are loaded automatically when an agent determines they're relevant to the current task.
+
+### MCP Servers
+
+Oh-My-Kiro uses [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) servers to extend agent capabilities. MCP configuration lives in `.kiro/settings/mcp.json`.
+
+**Included MCP servers:**
+
+| Server | Package | Purpose |
+|--------|---------|---------|
+| `web-research` | `web-research-mcp` | Web search and page fetching via DuckDuckGo |
+
+The `web-research` MCP server is used by `ghost-researcher` for web-based technical research. It provides two tools:
+- `multi_search` — Search DuckDuckGo with multiple queries in parallel
+- `fetch_pages` — Fetch and extract content from multiple URLs
+
+**First-time setup**: The MCP server is installed automatically via `npx` on first use. No API keys required — it uses DuckDuckGo for search.
+
+**Customization**: To add your own MCP servers, edit `.kiro/settings/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "web-research": {
+      "command": "npx",
+      "args": ["-y", "web-research-mcp"]
+    },
+    "your-server": {
+      "command": "npx",
+      "args": ["-y", "your-mcp-package"]
+    }
+  }
+}
+```
+
+Any agent with `includeMcpJson: true` in its config (the default) will have access to workspace-level MCP servers.
 
 ### Hooks
 
